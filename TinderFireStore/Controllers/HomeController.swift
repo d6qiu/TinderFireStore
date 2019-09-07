@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Firebase
 class HomeController: UIViewController {
 
     let topStackView = TopNavigationStackView()
@@ -15,35 +15,40 @@ class HomeController: UIViewController {
     let buttonsStackView = HomeBottomControlsStackView()
     
 
-    
-    let cardViewModels: [CardViewModel] = {
-        let producesCardViewModel = [
-            User(name: "Kelly", age: 23, profession: "Music Dj", imageNames: ["kelly1", "kelly2", "kelly3"]),
-            Advertiser(title: "Slide Out Menu", brandName: "Lets Build That App", posterPhotoName: "slide_out_menu_poster"),
-            User(name: "Jane", age: 18, profession: "Teacher", imageNames: ["jane1", "jane2", "jane3"]),
-
-        ] as [ProducesCardViewModel]
-        
-        let viewModels = producesCardViewModel.map({return $0.toCardViewModel()})
-        return viewModels
-        
-    }()
+    var cardViewModels = [CardViewModel]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         topStackView.settingsButton.addTarget(self, action: #selector(handleSettings), for: .touchUpInside)
-        
-
         setupLayout() // view.bottomAnchor is the real bottom edge
         //layout guide is a dummy view object with variables like edge constraints or height
         
+        fetchUsersFromFirestore()
         
-        setupDummyCards()
         
  
         
     }
+    
+    var lastFetchedUser: User?
+    fileprivate func fetchUsersFromFirestore() {
+        //filter and order by cant not use on different fields in one line
+        let query = Firestore.firestore().collection("users").order(by: "uid").start(after: [lastFetchedUser?.uid ?? ""]).limit(to: 2)
+        query.getDocuments { (snapshot, err) in
+            if let err = err {
+                print(err)
+                return
+            }
+            snapshot?.documents.forEach({ (documentSnapshot) in
+                let userDictionary = documentSnapshot.data()
+                let user = User(dictionary: userDictionary)
+                self.cardViewModels.append(user.toCardViewModel())
+                self.lastFetchedUser = user
+            })
+            self.setupFirestoreUserCards()
+        }
+    }
+    
     
     @objc func handleSettings() {
         let registrationController = RegistrationController()
@@ -51,7 +56,7 @@ class HomeController: UIViewController {
     }
     
     
-    fileprivate func setupDummyCards() {
+    fileprivate func setupFirestoreUserCards() {
         //(0..<10).forEach
         cardViewModels.forEach { (cardVM) in
             let cardView = CardView(frame: .zero)
@@ -67,6 +72,7 @@ class HomeController: UIViewController {
     //MARK:- Fileprivate
     
     fileprivate func setupLayout() {
+        view.backgroundColor = .white //programmatically default background is black
         let overallStackView = UIStackView(arrangedSubviews: [topStackView, cardsDeckView, buttonsStackView])
         overallStackView.axis = .vertical
         view.addSubview(overallStackView)

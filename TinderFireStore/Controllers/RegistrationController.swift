@@ -97,38 +97,15 @@ class RegistrationController: UIViewController {
     
     @objc fileprivate func handleRegister() {
         self.handleTapDismiss()
-        guard let email = emailTextField.text else {return}
-        guard let pass = passwordTextField.text else {return}
         
-        registrationViewModel.binadableIsRegistering.value = true
 
-        
-        Auth.auth().createUser(withEmail: email, password: pass) { (result, err) in
+        registrationViewModel.performRegistration { [weak self](err) in //unown is fine also
             if let err = err {
                 print(err)
-                self.showHUDWithError(error: err)
+                self?.showHUDWithError(error: err)
                 return
             }
-            
-            print("registered user:", result?.user.uid ?? "")
-            let filename = UUID().uuidString
-            let ref = Storage.storage().reference(withPath: "/images/\(filename)")
-            let imageData = self.registrationViewModel.bindableImage.value?.jpegData(compressionQuality: 0.75) ?? Data()
-            ref.putData(imageData, metadata: nil, completion: { (_, err) in
-                if let err = err {
-                    self.showHUDWithError(error: err)
-                    return
-                }
-                print("uploaded image to storage")
-                let downloadUrl = ref.downloadURL(completion: { (url, err) in
-                    if let err = err {
-                        self.showHUDWithError(error: err)
-                        return
-                    }
-                    
-                    self.registrationViewModel.binadableIsRegistering.value = false
-                })
-            })
+            print("registering user complete ")
         }
     }
     

@@ -7,14 +7,17 @@
 //
 
 import UIKit
+import SDWebImage
 
 class CardView: UIView {
 
-    
+    //didset invoked upon loading homecontroller in setupdummycards
     var cardViewModel: CardViewModel! {
         didSet {
             let imageName = cardViewModel.imageNames.first ?? "" //imageNames[0] not defined optional, if count == 0 will crash
-            imageView.image = UIImage(named: imageName)
+            if let url = URL(string: imageName) {
+                imageView.sd_setImage(with: url)                
+            }
             informationLabel.attributedText = cardViewModel.attributedString
             informationLabel.textAlignment = cardViewModel.textAlignment
             
@@ -56,8 +59,14 @@ class CardView: UIView {
     }
     //goal is to react when a property in another class changes, defines the reaction here
     fileprivate func setupImageIndexObserver() {
-        cardViewModel.imageIndexObserver = { [weak self](idx, image) in //avoid memorhy cycle
-            self?.imageView.image = image
+        cardViewModel.imageIndexObserver = { [weak self](idx, imageUrl) in //avoid memorhy cycle
+            guard let imageUrl = imageUrl else {return}
+            let url = URL(string: imageUrl)
+            self?.imageView.sd_setImage(with: url, completed: { (image, err, cacheType, url) in
+                if let _ = err {
+                    return
+                }
+            })
             self?.barsStackView.arrangedSubviews.forEach({ (v) in
                 v.backgroundColor = self?.barDeselectedColor
             })

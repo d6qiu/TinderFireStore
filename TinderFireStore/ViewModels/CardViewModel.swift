@@ -16,12 +16,12 @@ class CardViewModel {
     let imageNames: [String] //one slide include mutiple photots 
     let attributedString: NSAttributedString
     let textAlignment: NSTextAlignment
-    //activly changeable by user, model shoudl react to changes by user 
+    //only invoked when user taps card, activly changeable by user, model shoudl react to changes by user 
     fileprivate var imageIndex = 0 {
         didSet { //in a way didSet is the observer, observe change of imageIndex, should trigger changes in UI
-            let imageName = imageNames[imageIndex]
-            let image = UIImage(named: imageName) //uiimage has init optional
-            imageIndexObserver?(imageIndex, image) //calls this everytime imageIndex sets a new value
+            let imageUrl = imageNames[imageIndex]
+            //let image = UIImage(named: imageName) //uiimage has init optional
+            imageIndexObserver?(imageIndex, imageUrl) //calls this everytime imageIndex sets a new value
         }
     }
     
@@ -33,14 +33,20 @@ class CardViewModel {
     }
     
     //Reactuve programming
-    var imageIndexObserver: ((Int, UIImage?) -> ())?
+    var imageIndexObserver: ((Int, String?) -> ())?
     
     func advanceToNextPhoto() {
-        imageIndex = min(imageIndex + 1, imageNames.count - 1)
+        let newIndex = min(imageIndex + 1, imageNames.count - 1)
+        if newIndex != imageIndex { //does this check so cardview wont call the same url session again if same index
+            imageIndex = newIndex
+        }
     }
     
     func goToPreviousPhoto() {
-        imageIndex = max(0,imageIndex - 1)
+        let newIndex = max(0,imageIndex - 1)
+        if newIndex != imageIndex {
+            imageIndex = newIndex
+        }
     }
 }
 
