@@ -48,6 +48,7 @@ class CardView: UIView {
     
     fileprivate let barDeselectedColor = UIColor(white: 0, alpha: 0.1)
     
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
@@ -57,6 +58,7 @@ class CardView: UIView {
         addGestureRecognizer(panGesture)
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
     }
+    
     //goal is to react when a property in another class changes, defines the reaction here
     fileprivate func setupImageIndexObserver() {
         cardViewModel.imageIndexObserver = { [weak self](idx, imageUrl) in //avoid memorhy cycle

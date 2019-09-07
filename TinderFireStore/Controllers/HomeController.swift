@@ -8,11 +8,13 @@
 
 import UIKit
 import Firebase
+import JGProgressHUD
+
 class HomeController: UIViewController {
 
     let topStackView = TopNavigationStackView()
     let cardsDeckView = UIView()
-    let buttonsStackView = HomeBottomControlsStackView()
+    let bottomControls = HomeBottomControlsStackView()
     
 
     var cardViewModels = [CardViewModel]()
@@ -24,17 +26,27 @@ class HomeController: UIViewController {
         //layout guide is a dummy view object with variables like edge constraints or height
         
         fetchUsersFromFirestore()
+        setupButtonTargets()
         
-        
- 
-        
+    }
+    
+    fileprivate func setupButtonTargets() {
+        bottomControls.refreshButton.addTarget(self, action: #selector(handleRefresh), for: .touchUpInside)
+    }
+    
+    @objc fileprivate func handleRefresh() {
+        fetchUsersFromFirestore()
     }
     
     var lastFetchedUser: User?
     fileprivate func fetchUsersFromFirestore() {
+        let hud = JGProgressHUD(style: .dark)
+        hud.textLabel.text = "Finding Matches"
+        hud.show(in: view)
         //filter and order by cant not use on different fields in one line
-        let query = Firestore.firestore().collection("users").order(by: "uid").start(after: [lastFetchedUser?.uid ?? ""]).limit(to: 2)
+        let query = Firestore.firestore().collection("users").order(by: "uid").start(after: [lastFetchedUser?.uid ?? ""]).limit(to: 1)
         query.getDocuments { (snapshot, err) in
+            hud.dismiss()
             if let err = err {
                 print(err)
                 return
@@ -42,11 +54,21 @@ class HomeController: UIViewController {
             snapshot?.documents.forEach({ (documentSnapshot) in
                 let userDictionary = documentSnapshot.data()
                 let user = User(dictionary: userDictionary)
-                self.cardViewModels.append(user.toCardViewModel())
+                //self.cardViewModels.append(user.toCardViewModel())
                 self.lastFetchedUser = user
+                
+                self.setupCardFromUser(user: user)
             })
-            self.setupFirestoreUserCards()
+            //self.setupFirestoreUserCards() //this method will make each refresh load from cardviewmodels, will load the same old users even though they are swiped.
         }
+    }
+    
+    fileprivate func setupCardFromUser(user: User) {
+        let cardView = CardView(frame: .zero)
+        cardView.cardViewModel = user.toCardViewModel()
+        cardsDeckView.addSubview(cardView)
+        cardsDeckView.sendSubviewToBack(cardView) //fix anchor flash, the aanchor that stack subviews on top os subviews, now subsview anchor stack below each other, order of cards are reversed in each pagination
+        cardView.fillSuperview()
     }
     
     
@@ -55,25 +77,25 @@ class HomeController: UIViewController {
         present(registrationController, animated: true)
     }
     
-    
-    fileprivate func setupFirestoreUserCards() {
-        //(0..<10).forEach
-        cardViewModels.forEach { (cardVM) in
-            let cardView = CardView(frame: .zero)
-            
-            cardView.cardViewModel = cardVM
-            
-            cardsDeckView.addSubview(cardView)
-            cardView.fillSuperview()
-        }
-        
-    }
+//    //only mehtod that uses cardviewmodels cache
+//    fileprivate func setupFirestoreUserCards() {
+//        //(0..<10).forEach
+//        cardViewModels.forEach { (cardVM) in
+//            let cardView = CardView(frame: .zero)
+//
+//            cardView.cardViewModel = cardVM
+//
+//            cardsDeckView.addSubview(cardView)
+//            cardView.fillSuperview()
+//        }
+//
+//    }
 
     //MARK:- Fileprivate
     
     fileprivate func setupLayout() {
         view.backgroundColor = .white //programmatically default background is black
-        let overallStackView = UIStackView(arrangedSubviews: [topStackView, cardsDeckView, buttonsStackView])
+        let overallStackView = UIStackView(arrangedSubviews: [topStackView, cardsDeckView, bottomControls])
         overallStackView.axis = .vertical
         view.addSubview(overallStackView)
         overallStackView.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, trailing: view.trailingAnchor)
