@@ -73,8 +73,9 @@ class HomeController: UIViewController {
     
     
     @objc func handleSettings() {
-        let registrationController = RegistrationController()
-        present(registrationController, animated: true)
+        let settingsController = SettingsController()
+        let navController = UINavigationController(rootViewController: settingsController)
+        present(navController, animated: true)
     }
     
 //    //only mehtod that uses cardviewmodels cache
