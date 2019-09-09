@@ -10,6 +10,7 @@
 		E4008252230F3CC7001F5F86 /* CardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4008251230F3CC7001F5F86 /* CardViewModel.swift */; };
 		E4008254230F86BE001F5F86 /* Advertiser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4008253230F86BE001F5F86 /* Advertiser.swift */; };
 		E40A443F230CDC9100AF5B1E /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40A443E230CDC9100AF5B1E /* User.swift */; };
+		E43BCDD12325EEB400A62B9A /* SettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43BCDD02325EEB400A62B9A /* SettingsCell.swift */; };
 		E43EC06C22E186EC002EF120 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43EC06B22E186EC002EF120 /* AppDelegate.swift */; };
 		E43EC07122E186EC002EF120 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E43EC06F22E186EC002EF120 /* Main.storyboard */; };
 		E43EC07322E186EF002EF120 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E43EC07222E186EF002EF120 /* Assets.xcassets */; };
@@ -35,6 +36,7 @@
 		E4008251230F3CC7001F5F86 /* CardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewModel.swift; sourceTree = "<group>"; };
 		E4008253230F86BE001F5F86 /* Advertiser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Advertiser.swift; sourceTree = "<group>"; };
 		E40A443E230CDC9100AF5B1E /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		E43BCDD02325EEB400A62B9A /* SettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCell.swift; sourceTree = "<group>"; };
 		E43EC06822E186EC002EF120 /* TinderFireStore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TinderFireStore.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E43EC06B22E186EC002EF120 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E43EC07022E186EC002EF120 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -166,6 +168,7 @@
 				E44B488222E6C50E00BDC717 /* TopNavigationStackView.swift */,
 				E4C4FA6F2300F326003E3987 /* CardView.swift */,
 				E4548C34231C5AD5003BF5DD /* CustomTextField.swift */,
+				E43BCDD02325EEB400A62B9A /* SettingsCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -315,6 +318,7 @@
 				E44B488322E6C50E00BDC717 /* TopNavigationStackView.swift in Sources */,
 				E44142452324978F00396F17 /* CustomImagePickerController.swift in Sources */,
 				E487B9B12319F20500773FDF /* RegistrationController.swift in Sources */,
+				E43BCDD12325EEB400A62B9A /* SettingsCell.swift in Sources */,
 				E40A443F230CDC9100AF5B1E /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

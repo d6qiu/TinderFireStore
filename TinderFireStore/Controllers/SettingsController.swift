@@ -10,6 +10,25 @@ import UIKit
 
 class SettingsController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
+    
+    lazy var header: UIView = {
+        let header = UIView()
+        header.layer.opacity = 1
+        header.backgroundColor = UIColor(white: 0.95, alpha: 1)
+        header.addSubview(imageButtonLeft)
+        let padding: CGFloat = 16
+        imageButtonLeft.anchor(top: header.topAnchor, leading: header.leadingAnchor, bottom: header.bottomAnchor, trailing: nil, padding: .init(top: padding, left: padding, bottom: padding, right: 0))
+        imageButtonLeft.widthAnchor.constraint(equalTo: header.widthAnchor, multiplier: 0.45).isActive = true
+        
+        let stackView = UIStackView(arrangedSubviews: [imageButtonRightTop, imageButtonRightBot])
+        stackView.axis = .vertical
+        stackView.distribution = .fillEqually
+        stackView.spacing = padding
+        
+        header.addSubview(stackView)
+        stackView.anchor(top: header.topAnchor, leading: imageButtonLeft.trailingAnchor, bottom: header.bottomAnchor, trailing: header.trailingAnchor, padding: .init(top: padding, left: padding, bottom: padding, right: padding))
+        return header
+    }()
    
     lazy var imageButtonLeft = createButton(selector: #selector(handleSelectPhoto))
     lazy var imageButtonRightTop = createButton(selector: #selector(handleSelectPhoto))
@@ -19,6 +38,7 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
         let button = UIButton(type: .system)
         button.setTitle("Select Photo", for: .normal)
         button.addTarget(self, action: selector, for: .touchUpInside)
+        button.backgroundColor = UIColor.white
         button.layer.cornerRadius = 8
         button.imageView?.contentMode = .scaleAspectFill
         button.clipsToBounds = true
@@ -46,8 +66,9 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
         super.viewDidLoad()
         
         setupNavigationItems()
-        tableView.sectionIndexBackgroundColor = UIColor(white: 0.95, alpha: 1)
+        tableView.backgroundColor = UIColor(white: 0.95, alpha: 1)
         tableView.tableFooterView = UIView() //list of item view
+        tableView.keyboardDismissMode = .interactive //when scrolls down in tableview, keyboard also scrolls down
     }
     
     fileprivate func setupNavigationItems() {
@@ -61,27 +82,42 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
             
         ]
     }
-    
+    //one section = one header + its tablerows
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let header = UIView()
-        header.addSubview(imageButtonLeft)
-        let padding: CGFloat = 16
-        imageButtonLeft.anchor(top: header.topAnchor, leading: header.leadingAnchor, bottom: header.bottomAnchor, trailing: nil, padding: .init(top: padding, left: padding, bottom: padding, right: 0))
-        imageButtonLeft.widthAnchor.constraint(equalTo: header.widthAnchor, multiplier: 0.45).isActive = true
-        
-        let stackView = UIStackView(arrangedSubviews: [imageButtonRightTop, imageButtonRightBot])
-        stackView.axis = .vertical
-        stackView.distribution = .fillEqually
-        stackView.spacing = padding
-        
-        header.addSubview(stackView)
-        stackView.anchor(top: header.topAnchor, leading: imageButtonLeft.trailingAnchor, bottom: header.bottomAnchor, trailing: header.trailingAnchor, padding: .init(top: padding, left: padding, bottom: padding, right: padding))
-        
-        return header
+        if section == 0 { //
+            return header
+        }
+        let headerLabel = UILabel()
+        headerLabel.text = "Name"
+        return headerLabel
+    }
+    //shrift label to left by 16
+    class HeaderLabel: UILabel {
+        override func drawText(in rect: CGRect) {
+            super.drawText(in: rect.insetBy(dx: 16, dy: 0))
+        }
+    }
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == 0 {
+            return 300
+        }
+        return 40
     }
     
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 300
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return 5
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 0 {
+            return 0
+        }
+        return 1
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell(style: .default, reuseIdentifier: nil) //not going to reuse any
+        return cell
     }
     
     @objc fileprivate func handleCancel() {

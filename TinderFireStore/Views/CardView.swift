@@ -52,7 +52,8 @@ class CardView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
-        
+        backgroundColor = UIColor.white
+        layer.opacity = 1
         //handlePan automatically capture panGesture as gesture parameter, recognizer captures gesture, observer captures notification
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
         addGestureRecognizer(panGesture)

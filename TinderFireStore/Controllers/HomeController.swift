@@ -13,7 +13,12 @@ import JGProgressHUD
 class HomeController: UIViewController {
 
     let topStackView = TopNavigationStackView()
-    let cardsDeckView = UIView()
+    let cardsDeckView : UIView = {
+       let view = UIView()
+        view.layer.opacity = 1
+        view.backgroundColor = UIColor.white
+        return view
+    }()
     let bottomControls = HomeBottomControlsStackView()
     
 

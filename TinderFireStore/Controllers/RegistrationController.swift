@@ -27,6 +27,7 @@ class RegistrationController: UIViewController {
         let button = UIButton(type: .system)
         button.setTitle("Select Photo", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 32, weight: .heavy)
+        button.layer.opacity = 1
         button.backgroundColor = .white
         button.setTitleColor(.black, for: .normal)
         button.heightAnchor.constraint(equalToConstant: 275).isActive = true
@@ -85,6 +86,7 @@ class RegistrationController: UIViewController {
         button.setTitleColor(.gray, for: .disabled) //disable means the drawing looks disabled
         button.isEnabled = false
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .heavy)
+        button.layer.opacity = 1
         button.backgroundColor = .lightGray
         button.heightAnchor.constraint(equalToConstant: 44).isActive = true
         button.layer.cornerRadius = 22

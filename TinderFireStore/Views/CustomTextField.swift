@@ -17,6 +17,8 @@ class CustomTextField : UITextField {
         super.init(frame: .zero) //A designated initializer must call a designated initializer from its immediate superclass.
         
         layer.cornerRadius = 25
+        layer.opacity = 1
+        backgroundColor = UIColor.white
     }
     
     override var intrinsicContentSize: CGSize {
