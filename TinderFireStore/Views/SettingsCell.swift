@@ -13,6 +13,10 @@ class SettingsCell: UITableViewCell {
     class SettingsTextField: UITextField {
         
         
+        override func textRect(forBounds bounds: CGRect) -> CGRect {
+            return bounds.insetBy(dx: 24, dy: 0)
+        }
+        
         override func editingRect(forBounds bounds: CGRect) -> CGRect {
             return bounds.insetBy(dx: 24, dy: 0)
         }
@@ -22,8 +26,8 @@ class SettingsCell: UITableViewCell {
         }
     }
     
-    let textField: UITextField = {
-        let tf = UITextField()
+    let textField: SettingsTextField = {
+        let tf = SettingsTextField()
         tf.placeholder = "Enter Name"
         return tf
     }()

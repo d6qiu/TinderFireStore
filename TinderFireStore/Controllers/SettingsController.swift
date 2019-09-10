@@ -7,6 +7,9 @@
 //
 
 import UIKit
+import Firebase
+import JGProgressHUD
+import SDWebImage
 
 class SettingsController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
@@ -69,26 +72,54 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
         tableView.backgroundColor = UIColor(white: 0.95, alpha: 1)
         tableView.tableFooterView = UIView() //list of item view
         tableView.keyboardDismissMode = .interactive //when scrolls down in tableview, keyboard also scrolls down
+        
+        fetchCurrentUser()
     }
     
-    fileprivate func setupNavigationItems() {
-        navigationItem.title = "Settings"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain
-            , target: self, action: #selector(handleCancel))
-        navigationItem.rightBarButtonItems = [
-            UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(handleSave)),
-            UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(handleLogout))
+    var user: User?
+    
+    fileprivate func fetchCurrentUser() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        //theres get documents and get document
+        Firestore.firestore().collection("users").document(uid).getDocument { (snapshot, err) in
+            if let err = err {
+               print(err)
+                return
+            }
             
-        ]
+            guard let dictionary = snapshot?.data() else {return}
+            self.user = User(dictionary: dictionary)
+            
+            self.tableView.reloadData()
+        }
+        
     }
+    
+    fileprivate func loadUserPhotos() {
+        guard let imageUrl = user?.imageUrl, let url = URL(string: imageUrl) else {return}
+        //load image into cache known as the shared manager object
+        SDWebImageManager.shared.loadImage(with: url, options: .continueInBackground, progress: nil) { (image, _, _, _, _, _) in
+            self.imageButtonLeft.setImage(image?.withRenderingMode(.alwaysOriginal), for: .normal)
+        }
+    }
+    
+    
     //one section = one header + its tablerows
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if section == 0 { //
             return header
         }
-        let headerLabel = UILabel()
-        headerLabel.text = "Name"
+        let headerLabel = HeaderLabel()
+        switch section {
+        case 1:
+            headerLabel.text = "Name"
+        case 2:
+            headerLabel.text = "Profession"
+        case 3:
+            headerLabel.text = "Age"
+        default:
+            headerLabel.text = "Bio"
+        }
         return headerLabel
     }
     //shrift label to left by 16
@@ -116,8 +147,49 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .default, reuseIdentifier: nil) //not going to reuse any
+        let cell = SettingsCell(style: .default, reuseIdentifier: nil) //not going to reuse any
+        switch indexPath.section {
+        case 1:
+            cell.textField.placeholder = "Enter Name"
+            cell.textField.text = user?.name
+            cell.textField.addTarget(self, action: #selector(handleNameChange), for: .editingChanged)
+        case 2:
+            cell.textField.placeholder = "Enter Profession"
+            cell.textField.text = user?.profession
+            cell.textField.addTarget(self, action: #selector(handleProfessionChange), for: .editingChanged)
+        case 3:
+            cell.textField.placeholder = "Enter Age"
+            if let age = user?.age {
+                cell.textField.text = String(age)
+            }
+            cell.textField.addTarget(self, action: #selector(handleAgeChange), for: .editingChanged)
+        default:
+            cell.textField.placeholder = "Enter Bio"
+//            cell.textField.text = user?
+        }
         return cell
+    }
+    
+    @objc fileprivate func handleNameChange(textField: UITextField) {
+        self.user?.name = textField.text
+    }
+    @objc fileprivate func handleProfessionChange(textField: UITextField) {
+        self.user?.profession = textField.text
+    }
+    @objc fileprivate func handleAgeChange(textField: UITextField) {
+        self.user?.age = Int(textField.text ?? "") //so Int("") is nil?
+    }
+    
+    fileprivate func setupNavigationItems() {
+        navigationItem.title = "Settings"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain
+            , target: self, action: #selector(handleCancel))
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(handleSave)),
+            UIBarButtonItem(title: "Logout", style: .plain, target: self, action: #selector(handleLogout))
+            
+        ]
     }
     
     @objc fileprivate func handleCancel() {
@@ -125,7 +197,25 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
     }
     
     @objc fileprivate func handleSave() {
+        guard let uid = Auth.auth().currentUser?.uid else {return}
+        let docData: [String: Any] = [
+            "uid": uid,
+            "fullName" : user?.name ?? "",
+            "imageUrl": user?.imageUrl ?? "",
+            "age": user?.age ?? "",
+            "profession": user?.profession ?? ""
+        ]
         
+        let hud = JGProgressHUD(style: .dark)
+        hud.textLabel.text = "Saving bio"
+        hud.show(in: view) //show hud when click save
+        Firestore.firestore().collection("users").document(uid).setData(docData) { (err) in
+            hud.dismiss() //dismiss hud when saved
+            if let err = err {
+                print(err)
+                return
+            }
+        }
     }
     
     @objc fileprivate func handleLogout() {
