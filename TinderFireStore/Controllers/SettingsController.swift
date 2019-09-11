@@ -57,10 +57,39 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         let selectedImage = info[.originalImage] as? UIImage
-        let picker = picker as? CustomImagePickerController
+        let imageButton = (picker as? CustomImagePickerController)?.imageButton
         //picker doesnt know which button is which, thats why u dont set the image using like imageButtonLeft.setImage
-        picker?.imageButton?.setImage(selectedImage?.withRenderingMode(.alwaysOriginal), for: .normal)
+        imageButton?.setImage(selectedImage?.withRenderingMode(.alwaysOriginal), for: .normal)
         dismiss(animated: true)
+        let filename = UUID().uuidString
+        let ref = Storage.storage().reference(withPath: "/images/\(filename)")
+        guard let uploadData = selectedImage?.jpegData(compressionQuality: 0.75) else {return}
+        
+        let hud = JGProgressHUD(style: .dark)
+        hud.textLabel.text = "uploading image..."
+        hud.show(in: view)
+        ref.putData(uploadData, metadata: nil) { (nil, err) in
+            if let err = err {
+                hud.dismiss()
+                print(err)
+                return
+            }
+            ref.downloadURL(completion: { (url, err) in
+                hud.dismiss()
+                if let err = err {
+                    print(err)
+                }
+                
+                if imageButton == self.imageButtonLeft {
+                    self.user?.imageUrl = url?.absoluteString //gets data into cache then upload cache to firestore, ui is already updated for this once from the above code, user need save data by tapping save button
+                } else if imageButton == self.imageButtonRightTop {
+                    self.user?.imageUrl2 = url?.absoluteString
+                } else {
+                    self.user?.imageUrl3 = url?.absoluteString
+                }
+                
+            })
+        }
     }
     
    
@@ -89,18 +118,31 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
             
             guard let dictionary = snapshot?.data() else {return}
             self.user = User(dictionary: dictionary)
-            
+            self.loadUserPhotos()
             self.tableView.reloadData()
         }
         
     }
     
     fileprivate func loadUserPhotos() {
-        guard let imageUrl = user?.imageUrl, let url = URL(string: imageUrl) else {return}
-        //load image into cache known as the shared manager object
-        SDWebImageManager.shared.loadImage(with: url, options: .continueInBackground, progress: nil) { (image, _, _, _, _, _) in
-            self.imageButtonLeft.setImage(image?.withRenderingMode(.alwaysOriginal), for: .normal)
+        if let imageUrl = user?.imageUrl, let url = URL(string: imageUrl) {
+            //load image into cache known as the shared manager object
+            SDWebImageManager.shared.loadImage(with: url, options: .continueInBackground, progress: nil) { (image, _, _, _, _, _) in
+                self.imageButtonLeft.setImage(image?.withRenderingMode(.alwaysOriginal), for: .normal)
+            }
         }
+        if let imageUrl = user?.imageUrl2, let url = URL(string: imageUrl) {
+            SDWebImageManager.shared.loadImage(with: url, options: .continueInBackground, progress: nil) { (image, _, _, _, _, _) in
+                self.imageButtonRightTop.setImage(image?.withRenderingMode(.alwaysOriginal), for: .normal)
+            }
+        }
+        
+        if let imageUrl = user?.imageUrl3, let url = URL(string: imageUrl) {
+            SDWebImageManager.shared.loadImage(with: url, options: .continueInBackground, progress: nil) { (image, _, _, _, _, _) in
+                self.imageButtonRightBot.setImage(image?.withRenderingMode(.alwaysOriginal), for: .normal)
+            }
+        }
+        
     }
     
     
@@ -202,6 +244,8 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
             "uid": uid,
             "fullName" : user?.name ?? "",
             "imageUrl": user?.imageUrl ?? "",
+            "imageUrl2": user?.imageUrl2 ?? "",
+            "imageUrl3": user?.imageUrl3 ?? "",
             "age": user?.age ?? "",
             "profession": user?.profession ?? ""
         ]
