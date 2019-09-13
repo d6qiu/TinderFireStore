@@ -98,8 +98,7 @@ class RegistrationController: UIViewController {
     let registeringHUD = JGProgressHUD(style: .dark)
     
     @objc fileprivate func handleRegister() {
-        self.handleTapDismiss()
-        
+        self.handleTapDismiss()// dismiss keyboard with return view to original positiion
 
         registrationViewModel.performRegistration { [weak self](err) in //unown is fine also
             if let err = err {
@@ -194,7 +193,7 @@ class RegistrationController: UIViewController {
     //dismiss keyboard
     @objc fileprivate func handleTapDismiss() {
         view.endEditing(true)
-        //scroll view back down
+        //scroll view scrolls back down so view beccomes original
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
             self.view.transform = .identity
         })

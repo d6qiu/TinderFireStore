@@ -23,6 +23,7 @@
 		E462BEB922E2857B00432B7F /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E462BEB822E2857B00432B7F /* Extensions.swift */; };
 		E462BEBC22E2C34800432B7F /* HomeBottomControlsStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E462BEBB22E2C34800432B7F /* HomeBottomControlsStackView.swift */; };
 		E46A64F8230BC7750083CCD7 /* HomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46A64F7230BC7750083CCD7 /* HomeController.swift */; };
+		E46C58B52329548D009A7EFE /* AgeRangeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46C58B42329548D009A7EFE /* AgeRangeCell.swift */; };
 		E487B9B12319F20500773FDF /* RegistrationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E487B9B02319F20500773FDF /* RegistrationController.swift */; };
 		E4C4FA702300F326003E3987 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C4FA6F2300F326003E3987 /* CardView.swift */; };
 		E4DF175123204E1400C8E3FB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E4DF175023204E1400C8E3FB /* GoogleService-Info.plist */; };
@@ -51,6 +52,7 @@
 		E462BEB822E2857B00432B7F /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		E462BEBB22E2C34800432B7F /* HomeBottomControlsStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeBottomControlsStackView.swift; sourceTree = "<group>"; };
 		E46A64F7230BC7750083CCD7 /* HomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeController.swift; sourceTree = "<group>"; };
+		E46C58B42329548D009A7EFE /* AgeRangeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgeRangeCell.swift; sourceTree = "<group>"; };
 		E487B9B02319F20500773FDF /* RegistrationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationController.swift; sourceTree = "<group>"; };
 		E4C4FA6F2300F326003E3987 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		E4DF175023204E1400C8E3FB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -92,7 +94,6 @@
 			children = (
 				E46A64F7230BC7750083CCD7 /* HomeController.swift */,
 				E487B9B02319F20500773FDF /* RegistrationController.swift */,
-				E4508109231F45E200EB1D08 /* RegistrationViewModel.swift */,
 				E4DF175223206AAC00C8E3FB /* Bindable.swift */,
 				E44142422324762A00396F17 /* SettingsController.swift */,
 				E44142442324978F00396F17 /* CustomImagePickerController.swift */,
@@ -103,6 +104,7 @@
 		E4008250230F3CB0001F5F86 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				E4508109231F45E200EB1D08 /* RegistrationViewModel.swift */,
 				E4008251230F3CC7001F5F86 /* CardViewModel.swift */,
 			);
 			path = ViewModels;
@@ -169,6 +171,7 @@
 				E4C4FA6F2300F326003E3987 /* CardView.swift */,
 				E4548C34231C5AD5003BF5DD /* CustomTextField.swift */,
 				E43BCDD02325EEB400A62B9A /* SettingsCell.swift */,
+				E46C58B42329548D009A7EFE /* AgeRangeCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -309,6 +312,7 @@
 				E450810A231F45E200EB1D08 /* RegistrationViewModel.swift in Sources */,
 				E4548C35231C5AD5003BF5DD /* CustomTextField.swift in Sources */,
 				E462BEBC22E2C34800432B7F /* HomeBottomControlsStackView.swift in Sources */,
+				E46C58B52329548D009A7EFE /* AgeRangeCell.swift in Sources */,
 				E4008254230F86BE001F5F86 /* Advertiser.swift in Sources */,
 				E462BEB922E2857B00432B7F /* Extensions.swift in Sources */,
 				E43EC06C22E186EC002EF120 /* AppDelegate.swift in Sources */,

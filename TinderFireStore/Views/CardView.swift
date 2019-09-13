@@ -11,7 +11,7 @@ import SDWebImage
 
 class CardView: UIView {
 
-    //didset invoked upon loading homecontroller in setupdummycards
+    //didset invoked upon loading homecontroller in setupcardfromuser
     var cardViewModel: CardViewModel! {
         didSet {
             let imageName = cardViewModel.imageNames.first ?? "" //imageNames[0] not defined optional, if count == 0 will crash
