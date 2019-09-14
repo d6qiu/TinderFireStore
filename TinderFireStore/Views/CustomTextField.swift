@@ -10,19 +10,20 @@ import UIKit
 
 class CustomTextField : UITextField {
     
-    var padding: CGFloat
-    
-    init(padding: CGFloat) {
+    let padding: CGFloat
+    let height: CGFloat
+    init(padding: CGFloat, height: CGFloat) {
         self.padding = padding //A Swift class must initialize its own (non-inherited) properties before it calls its superclass’s designated initializer.  You can then set inherited properties after calling the superclass’s designated initializer, if you wish.
+        self.height = height
         super.init(frame: .zero) //A designated initializer must call a designated initializer from its immediate superclass.
         
-        layer.cornerRadius = 25
+        layer.cornerRadius = height / 2
         layer.opacity = 1
         backgroundColor = UIColor.white
     }
     
     override var intrinsicContentSize: CGSize {
-        return .init(width: 0, height: 50) //default first size
+        return .init(width: 0, height: height) //default first size
     }
     //right text padding wehn enter text
     override func textRect(forBounds bounds: CGRect) -> CGRect {

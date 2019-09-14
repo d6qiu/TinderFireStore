@@ -10,7 +10,9 @@ import UIKit
 import Firebase
 import JGProgressHUD
 
-class HomeController: UIViewController {
+class HomeController: UIViewController, SettingsControllerDelegate {
+    
+    
 
     let topStackView = TopNavigationStackView()
     let cardsDeckView : UIView = {
@@ -24,18 +26,51 @@ class HomeController: UIViewController {
 
     var cardViewModels = [CardViewModel]()
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        topStackView.settingsButton.addTarget(self, action: #selector(handleSettings), for: .touchUpInside)
+        setupButtonTargets()
         setupLayout() // view.bottomAnchor is the real bottom edge
         //layout guide is a dummy view object with variables like edge constraints or height
-        
-        fetchUsersFromFirestore()
-        setupButtonTargets()
+        fetchCurrentUser()
         
     }
     
+    fileprivate var user: User?
+    fileprivate let hud = JGProgressHUD(style: .dark)
+        
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if Auth.auth().currentUser == nil {
+            let loginController = LoginController()
+            let navController = UINavigationController(rootViewController: loginController)
+            present(navController, animated: true)
+        }
+        
+    }
+    
+    fileprivate func fetchCurrentUser() {
+        hud.textLabel.text = "Loading"
+        hud.show(in: view)
+        cardsDeckView.subviews.forEach { (view) in
+            view.removeFromSuperview() //need this otherwise cardsviews keep stacking on old ones if didnt swipe old ones off since homecontroller dont get distroyed
+        }
+        //theres get documents and get document
+        Firestore.firestore().fetchCurrentUser { (user, err) in
+            if let err = err {
+                print(err)
+                return
+            }
+            self.hud.dismiss()
+            self.user = user
+            self.fetchUsersFromFirestore()
+        }
+
+    }
+    
     fileprivate func setupButtonTargets() {
+        topStackView.settingsButton.addTarget(self, action: #selector(handleSettings), for: .touchUpInside)
+
         bottomControls.refreshButton.addTarget(self, action: #selector(handleRefresh), for: .touchUpInside)
     }
     
@@ -45,11 +80,13 @@ class HomeController: UIViewController {
     
     var lastFetchedUser: User?
     fileprivate func fetchUsersFromFirestore() {
+        guard let minAge = user?.minSeekingAge, let maxAge = user?.maxSeekingAge else {return}
         let hud = JGProgressHUD(style: .dark)
         hud.textLabel.text = "Finding Matches"
         hud.show(in: view)
-        //filter and order by cant not use on different fields in one line
-        let query = Firestore.firestore().collection("users").order(by: "uid").start(after: [lastFetchedUser?.uid ?? ""]).limit(to: 1)
+        //cant not filter(whereField) and then order on different fields at the same time
+        //let query = Firestore.firestore().collection("users").order(by: "uid").start(after: [lastFetchedUser?.uid ?? ""]).limit(to: 1)
+        let query = Firestore.firestore().collection("users").whereField("age", isGreaterThanOrEqualTo: minAge).whereField("age", isLessThanOrEqualTo: maxAge)
         query.getDocuments { (snapshot, err) in
             hud.dismiss()
             if let err = err {
@@ -61,7 +98,6 @@ class HomeController: UIViewController {
                 let user = User(dictionary: userDictionary)
                 //self.cardViewModels.append(user.toCardViewModel())
                 self.lastFetchedUser = user
-                
                 self.setupCardFromUser(user: user)
             })
             //self.setupFirestoreUserCards() //this method will make each refresh load from cardviewmodels, will load the same old users even though they are swiped.
@@ -79,8 +115,13 @@ class HomeController: UIViewController {
     
     @objc func handleSettings() {
         let settingsController = SettingsController()
+        settingsController.delegate = self
         let navController = UINavigationController(rootViewController: settingsController)
         present(navController, animated: true)
+    }
+    
+    func didSaveSettings() {
+        fetchCurrentUser() //has fetchusersfromfirebase in it, need to update user model first, so the new age range gets refiltered
     }
     
 //    //only mehtod that uses cardviewmodels cache

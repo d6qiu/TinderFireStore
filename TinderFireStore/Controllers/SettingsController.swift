@@ -11,8 +11,13 @@ import Firebase
 import JGProgressHUD
 import SDWebImage
 
+protocol SettingsControllerDelegate {
+    func didSaveSettings()
+}
+
 class SettingsController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
+    var delegate: SettingsControllerDelegate?
     
     lazy var header: UIView = {
         let header = UIView()
@@ -108,16 +113,13 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
     var user: User?
     
     fileprivate func fetchCurrentUser() {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
         //theres get documents and get document
-        Firestore.firestore().collection("users").document(uid).getDocument { (snapshot, err) in
+        Firestore.firestore().fetchCurrentUser { (user, err) in
             if let err = err {
-               print(err)
+                print(err)
                 return
             }
-            
-            guard let dictionary = snapshot?.data() else {return}
-            self.user = User(dictionary: dictionary)
+            self.user = user
             self.loadUserPhotos()
             self.tableView.reloadData()
         }
@@ -270,7 +272,6 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
         ageRangeCell.maxLabel.text = "Max \(maxAge)"
         user?.minSeekingAge = minAge
         user?.maxSeekingAge = maxAge
-        
     }
     
     @objc fileprivate func handleNameChange(textField: UITextField) {
@@ -322,11 +323,15 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
                 print(err)
                 return
             }
+            self.dismiss(animated: true, completion: {
+                self.delegate?.didSaveSettings()
+            })
         }
     }
     
     @objc fileprivate func handleLogout() {
-        
+        try? Auth.auth().signOut() //dont need try catch block if use try?
+        dismiss(animated: true)
     }
 
 
