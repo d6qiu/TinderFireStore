@@ -9,36 +9,42 @@
 import UIKit
 import SDWebImage
 
+protocol CardViewDelegate {
+    func didTapMoreInfo(cardViewModel: CardViewModel)
+}
+
 class CardView: UIView {
 
+    var delegate: CardViewDelegate?
+    
     //didset invoked upon loading homecontroller in setupcardfromuser
     var cardViewModel: CardViewModel! {
         didSet {
-            let imageName = cardViewModel.imageNames.first ?? "" //imageNames[0] not defined optional, if count == 0 will crash
-            if let url = URL(string: imageName) {
-                imageView.sd_setImage(with: url)                
-            }
+//            let imageName = cardViewModel.imageUrls.first ?? "" //imageNames[0] not defined optional, if count == 0 will crash
+//            let url = URL(string: imageName)
+//            imageView.sd_setImage(with: url, placeholderImage: #imageLiteral(resourceName: "photo_placeholder"), options: .continueInBackground) //image placeholder in case url doesnt work, placehold image will show until finish load pic
+            
+            swipingPhotosController.cardViewModel = self.cardViewModel
+            
             informationLabel.attributedText = cardViewModel.attributedString
             informationLabel.textAlignment = cardViewModel.textAlignment
             
-            (0..<cardViewModel.imageNames.count).forEach { (_) in
+            (0..<cardViewModel.imageUrls.count).forEach { (_) in
                 let barView = UIView()
                 barView.backgroundColor = barDeselectedColor
                 barsStackView.addArrangedSubview(barView)
             }
             barsStackView.arrangedSubviews.first?.backgroundColor = .white
-            
             setupImageIndexObserver()
-            
         }
     }
     
     
-    fileprivate let imageView = UIImageView(image: #imageLiteral(resourceName: "lady5c")) //setting fileprivate is for easy locate bugs, bugs of this property must be within this file
+    fileprivate let swipingPhotosController = SwipingPhotosController(isCardViewMode: true)
     fileprivate let informationLabel = UILabel()
     
     //Configurations
-    fileprivate let threshold: CGFloat = 80
+    fileprivate let threshold: CGFloat = 80 //setting fileprivate is for easy locate bugs, bugs of this property must be within this file
 
     fileprivate let gradientLayer = CAGradientLayer()
 
@@ -63,17 +69,11 @@ class CardView: UIView {
     //goal is to react when a property in another class changes, defines the reaction here
     fileprivate func setupImageIndexObserver() {
         cardViewModel.imageIndexObserver = { [weak self](idx, imageUrl) in //avoid memorhy cycle
-            guard let imageUrl = imageUrl else {return}
-            let url = URL(string: imageUrl)
-            self?.imageView.sd_setImage(with: url, completed: { (image, err, cacheType, url) in
-                if let _ = err {
-                    return
-                }
-            })
-            self?.barsStackView.arrangedSubviews.forEach({ (v) in
-                v.backgroundColor = self?.barDeselectedColor
-            })
-            self?.barsStackView.arrangedSubviews[idx].backgroundColor = .white
+//            let url = URL(string: imageUrl!)
+//            self?.barsStackView.arrangedSubviews.forEach({ (v) in
+//                v.backgroundColor = self?.barDeselectedColor
+//            })
+//            self?.barsStackView.arrangedSubviews[idx].backgroundColor = .white
         }
     }
     
@@ -89,16 +89,33 @@ class CardView: UIView {
         
     }
     
+    fileprivate let moreInfoButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setImage(#imageLiteral(resourceName: "info_icon").withRenderingMode(.alwaysOriginal), for: .normal)
+        button.addTarget(self, action: #selector(handleMoreInfo), for: .touchUpInside)
+
+        return button
+    }()
+    
+    @objc fileprivate func handleMoreInfo() {
+        //cardview object has no present method
+        //not optimal soluton becasue of maintainabilty
+//        let rootViewController = UIApplication.shared.keyWindow?.rootViewController //present anycontroller u want but be caraful with view hierachy
+//        let userDetailsController = UIViewController()
+//        userDetailsController.view.backgroundColor = .white
+//        rootViewController?.present(userDetailsController, animated: true)
+        
+        delegate?.didTapMoreInfo(cardViewModel: self.cardViewModel)
+    }
+    
     fileprivate func setupLayout() {
         layer.cornerRadius = 10
         clipsToBounds = true //if false exceeding frames from bounds are not clipped
         
+        let swipingPhotosView = swipingPhotosController.view!
+        addSubview(swipingPhotosView)
+        swipingPhotosView.fillSuperview()
         
-        imageView.contentMode = .scaleAspectFill
-        addSubview(imageView)
-        imageView.fillSuperview()
-        
-        setupBarsStackView()
         
         setupGradientLayer() //self.frame is zero at this point, wont be zero when init is done
         
@@ -107,6 +124,9 @@ class CardView: UIView {
         informationLabel.anchor(top: nil, leading: leadingAnchor, bottom: bottomAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 16, bottom: 16, right: 16))
         informationLabel.textColor = .white
         informationLabel.numberOfLines = 0
+        
+        addSubview(moreInfoButton)
+        moreInfoButton.anchor(top: nil, leading: nil, bottom: self.bottomAnchor, trailing: trailingAnchor, padding: .init(top: 0, left: 0, bottom: 16, right: 16), size: .init(width: 44, height: 44)) //apple guideline button size has to be bigger than 40
     }
     
     fileprivate func setupBarsStackView() {

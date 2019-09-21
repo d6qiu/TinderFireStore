@@ -13,13 +13,13 @@ protocol ProducesCardViewModel {
 }
 
 class CardViewModel {
-    let imageNames: [String] //one slide include mutiple photots 
+    let imageUrls: [String] //one slide include mutiple photots 
     let attributedString: NSAttributedString
     let textAlignment: NSTextAlignment
     //only invoked when user taps card, activly changeable by user, model shoudl react to changes by user 
     fileprivate var imageIndex = 0 {
         didSet { //in a way didSet is the observer, observe change of imageIndex, should trigger changes in UI
-            let imageUrl = imageNames[imageIndex]
+            let imageUrl = imageUrls[imageIndex]
             //let image = UIImage(named: imageName) //uiimage has init optional
             imageIndexObserver?(imageIndex, imageUrl) //calls this everytime imageIndex sets a new value
         }
@@ -27,7 +27,7 @@ class CardViewModel {
     
     
     init(imageNames: [String], attributedString: NSAttributedString, textAlignment: NSTextAlignment) {
-        self.imageNames = imageNames
+        self.imageUrls = imageNames
         self.attributedString = attributedString
         self.textAlignment = textAlignment
     }
@@ -36,7 +36,7 @@ class CardViewModel {
     var imageIndexObserver: ((Int, String?) -> ())?
     
     func advanceToNextPhoto() {
-        let newIndex = min(imageIndex + 1, imageNames.count - 1)
+        let newIndex = min(imageIndex + 1, imageUrls.count - 1)
         if newIndex != imageIndex { //does this check so cardview wont call the same url session again if same index
             imageIndex = newIndex
         }

@@ -43,8 +43,8 @@ class RegistrationViewModel {
         }
     }
     //checks own property, self calls a functor that makes another class do stuff
-    fileprivate func checkFormValidity() {
-        let isFormValid = fullName?.isEmpty == false && email?.isEmpty == false && password?.isEmpty == false
+    func checkFormValidity() {
+        let isFormValid = fullName?.isEmpty == false && email?.isEmpty == false && password?.isEmpty == false && bindableImage.value != nil
         bindableIsFormValid.value = isFormValid
     }
     
@@ -93,7 +93,14 @@ class RegistrationViewModel {
     
     fileprivate func saveInfoToFirestore(imageUrl: String,completion: @escaping (Error?) -> ()) {
         let uid = Auth.auth().currentUser?.uid ?? ""
-        let docData = ["fullName": fullName ?? "", "uid": uid, "imageUrl": imageUrl]
+        let docData: [String: Any] = ["fullName": fullName ?? "",
+                       "uid": uid,
+                       "imageUrl": imageUrl,
+//                       "age": 18,
+                        "minSeekingAge": SettingsController.defaultMinSeekingAge,
+                        "maxSeekingAge": SettingsController.defaultMaxSeekingAge
+                       
+            ]
         Firestore.firestore().collection("users").document(uid).setData(docData, completion: completion)
     }
 

@@ -297,7 +297,7 @@ extension RegistrationController: UIImagePickerControllerDelegate, UINavigationC
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         let image = info[.originalImage] as? UIImage
         registrationViewModel.bindableImage.value = image
-        //needs renderingmode when image is blue template
+        registrationViewModel.checkFormValidity() //checkfromvalidity gets called when text changes, not when image selected
         dismiss(animated: true)
     }
     

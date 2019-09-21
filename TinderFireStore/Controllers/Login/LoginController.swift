@@ -10,9 +10,14 @@ import UIKit
 import JGProgressHUD
 import RxSwift
 import RxCocoa
+
+protocol LoginControllerDelegate: UIViewController {
+    func didFinishLoggingIn()
+}
+
 class LoginController: UIViewController {
     
-//    var delegate: LoginControllerDelegate?
+    var delegate: LoginControllerDelegate?
     
     let emailTextField: CustomTextField = {
         let tf = CustomTextField(padding: 24, height: 50)
@@ -72,7 +77,7 @@ class LoginController: UIViewController {
             
             print("Logged in successfully")
             self.dismiss(animated: true, completion: {
-//                self.delegate?.didFinishLoggingIn()
+                self.delegate?.didFinishLoggingIn()
             })
         }
     }

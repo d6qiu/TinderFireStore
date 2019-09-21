@@ -10,7 +10,7 @@ import UIKit
 import Firebase
 import JGProgressHUD
 
-class HomeController: UIViewController, SettingsControllerDelegate {
+class HomeController: UIViewController, SettingsControllerDelegate, LoginControllerDelegate, CardViewDelegate{
     
     
 
@@ -32,7 +32,7 @@ class HomeController: UIViewController, SettingsControllerDelegate {
         setupButtonTargets()
         setupLayout() // view.bottomAnchor is the real bottom edge
         //layout guide is a dummy view object with variables like edge constraints or height
-        fetchCurrentUser()
+        fetchCurrentUser() //includes fetchuserfromdatabase
         
     }
     
@@ -43,10 +43,15 @@ class HomeController: UIViewController, SettingsControllerDelegate {
         super.viewDidAppear(animated)
         if Auth.auth().currentUser == nil {
             let loginController = LoginController()
+            loginController.delegate = self
             let navController = UINavigationController(rootViewController: loginController)
             present(navController, animated: true)
         }
         
+    }
+    //refresh homecontroller after logging in, called in logincontroller
+    func didFinishLoggingIn() {
+        fetchCurrentUser() //includes fetchuserfromdatabase
     }
     
     fileprivate func fetchCurrentUser() {
@@ -80,12 +85,16 @@ class HomeController: UIViewController, SettingsControllerDelegate {
     
     var lastFetchedUser: User?
     fileprivate func fetchUsersFromFirestore() {
-        guard let minAge = user?.minSeekingAge, let maxAge = user?.maxSeekingAge else {return}
+        //guard let minAge = ...
+        let minAge = user?.minSeekingAge ?? SettingsController.defaultMinSeekingAge //fix bug where a new registering user screen is occupied by a loading hud because early return due to nil minAge using guard statement
+        let maxAge = user?.maxSeekingAge ?? SettingsController.defaultMaxSeekingAge
+        
         let hud = JGProgressHUD(style: .dark)
         hud.textLabel.text = "Finding Matches"
         hud.show(in: view)
         //cant not filter(whereField) and then order on different fields at the same time
         //let query = Firestore.firestore().collection("users").order(by: "uid").start(after: [lastFetchedUser?.uid ?? ""]).limit(to: 1)
+        //if argument is nil, invalid query will crash
         let query = Firestore.firestore().collection("users").whereField("age", isGreaterThanOrEqualTo: minAge).whereField("age", isLessThanOrEqualTo: maxAge)
         query.getDocuments { (snapshot, err) in
             hud.dismiss()
@@ -96,9 +105,11 @@ class HomeController: UIViewController, SettingsControllerDelegate {
             snapshot?.documents.forEach({ (documentSnapshot) in
                 let userDictionary = documentSnapshot.data()
                 let user = User(dictionary: userDictionary)
+                if user.uid != Auth.auth().currentUser?.uid {
+                    self.setupCardFromUser(user: user)
+                }
                 //self.cardViewModels.append(user.toCardViewModel())
-                self.lastFetchedUser = user
-                self.setupCardFromUser(user: user)
+//                self.lastFetchedUser = user
             })
             //self.setupFirestoreUserCards() //this method will make each refresh load from cardviewmodels, will load the same old users even though they are swiped.
         }
@@ -106,10 +117,18 @@ class HomeController: UIViewController, SettingsControllerDelegate {
     
     fileprivate func setupCardFromUser(user: User) {
         let cardView = CardView(frame: .zero)
+        
+        cardView.delegate = self
         cardView.cardViewModel = user.toCardViewModel()
         cardsDeckView.addSubview(cardView)
         cardsDeckView.sendSubviewToBack(cardView) //fix anchor flash, the aanchor that stack subviews on top os subviews, now subsview anchor stack below each other, order of cards are reversed in each pagination
         cardView.fillSuperview()
+    }
+    
+    func didTapMoreInfo(cardViewModel: CardViewModel) {
+        let userDetailsController = UserDetailsController()
+        userDetailsController.cardViewModel = cardViewModel
+        present(userDetailsController, animated: true)
     }
     
     

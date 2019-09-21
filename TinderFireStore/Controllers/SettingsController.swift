@@ -193,19 +193,20 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
         return 1
     }
     
+    static let defaultMinSeekingAge = 18
+    static let defaultMaxSeekingAge = 50
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 5 {
             let ageRangeCell = AgeRangeCell(style: .default, reuseIdentifier: nil)
             ageRangeCell.minSlider.addTarget(self, action: #selector(handleMinAgeChanged), for: .valueChanged)
             ageRangeCell.maxSlider.addTarget(self, action: #selector(handleMaxAgeChanged), for: .valueChanged)
-            if let minAge = user?.minSeekingAge {
-                ageRangeCell.minLabel.text = "Min \(minAge)"
-                ageRangeCell.minSlider.value = Float(minAge)
-            }
-            if let maxAge = user?.maxSeekingAge {
-                ageRangeCell.maxLabel.text = "Max \(maxAge)"
-                ageRangeCell.maxSlider.value = Float(maxAge)
-            }
+            let minAge = user?.minSeekingAge ?? SettingsController.defaultMinSeekingAge
+            let maxAge = user?.maxSeekingAge ?? SettingsController.defaultMaxSeekingAge
+            ageRangeCell.minLabel.text = "Min \(minAge)"
+            ageRangeCell.minSlider.value = Float(minAge)
+            ageRangeCell.maxLabel.text = "Max \(maxAge)"
+            ageRangeCell.maxSlider.value = Float(maxAge)
             return ageRangeCell
         }
         
@@ -304,9 +305,9 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
         let docData: [String: Any] = [
             "uid": uid,
             "fullName" : user?.name ?? "",
-            "imageUrl": user?.imageUrl ?? "",
-            "imageUrl2": user?.imageUrl2 ?? "",
-            "imageUrl3": user?.imageUrl3 ?? "",
+            "imageUrl": user?.imageUrl,
+            "imageUrl2": user?.imageUrl2,
+            "imageUrl3": user?.imageUrl3,
             "age": user?.age,
             "profession": user?.profession ?? "",
             "minSeekingAge": user?.minSeekingAge,
