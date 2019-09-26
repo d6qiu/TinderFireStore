@@ -119,6 +119,7 @@ PODS:
   - SDWebImage (5.0.6):
     - SDWebImage/Core (= 5.0.6)
   - SDWebImage/Core (5.0.6)
+  - wobbly (0.1.1)
 
 DEPENDENCIES:
   - Firebase/Auth
@@ -129,6 +130,7 @@ DEPENDENCIES:
   - RxCocoa
   - RxSwift
   - SDWebImage
+  - wobbly
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -154,6 +156,7 @@ SPEC REPOS:
     - RxRelay
     - RxSwift
     - SDWebImage
+    - wobbly
 
 SPEC CHECKSUMS:
   BoringSSL-GRPC: db8764df3204ccea016e1c8dd15d9a9ad63ff318
@@ -178,7 +181,8 @@ SPEC CHECKSUMS:
   RxRelay: 4f7409406a51a55cd88483f21ed898c234d60f18
   RxSwift: 8b0671caa829a763bbce7271095859121cbd895f
   SDWebImage: 920f1a2ff1ca8296ad34f6e0510a1ef1d70ac965
+  wobbly: b2253727778f96e36536553bff65b56afd38cc9c
 
-PODFILE CHECKSUM: 3b96a157c6c321e7085a625e0611c2b012554c68
+PODFILE CHECKSUM: c36281764e79ce8ba14530c794dedf994c8525e4
 
 COCOAPODS: 1.5.3

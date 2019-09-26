@@ -11,10 +11,13 @@ import SDWebImage
 
 protocol CardViewDelegate {
     func didTapMoreInfo(cardViewModel: CardViewModel)
+    func didRemoveCard(cardView: CardView)
 }
 
 class CardView: UIView {
 
+    var nextCardView: CardView?
+    
     var delegate: CardViewDelegate?
     
     //didset invoked upon loading homecontroller in setupcardfromuser
@@ -190,12 +193,12 @@ class CardView: UIView {
 //                self.transform = offScreenTransform
             } else {
                 self.transform = .identity
-                
             }
         }) { (_) in
             self.transform = .identity //this line suppose to return cards back when swiped but since removeFromSuperView anyuway so this line is useless
             if shouldDismissCard {
                 self.removeFromSuperview()
+                self.delegate?.didRemoveCard(cardView: self)
 //                self.frame = CGRect(x: 0, y: 0, width: self.superview!.frame.width, height: self.superview!.frame.height)
             }
             

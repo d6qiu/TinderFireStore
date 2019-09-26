@@ -67,7 +67,7 @@ class SwipingPhotosController: UIPageViewController, UIPageViewControllerDataSou
             
         }
     }
-    
+    //if enable swiping ability then cant tap to next
     fileprivate func disableSwipingAbility() {
         view.subviews.forEach { (view) in
             if let view = view as? UIScrollView {

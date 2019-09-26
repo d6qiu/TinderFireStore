@@ -11,7 +11,7 @@ import Firebase
 import JGProgressHUD
 
 class RegistrationController: UIViewController {
-
+    
     //Size classes don’t cover the difference between iPad Portrait and Landscape: they both have Regular Width and Regular Height.
     override public var traitCollection: UITraitCollection {
         
@@ -22,6 +22,8 @@ class RegistrationController: UIViewController {
         }
         return super.traitCollection
     }
+    
+    var delegate: LoginControllerDelegate?
     
     let selectPhotoButton: UIButton = {
         let button = UIButton(type: .system)
@@ -106,6 +108,11 @@ class RegistrationController: UIViewController {
                 self?.showHUDWithError(error: err)
                 return
             }
+            
+            self?.dismiss(animated: true, completion: {
+                self?.delegate?.didFinishLoggingIn()
+            })
+            
             print("registering user complete ")
         }
     }

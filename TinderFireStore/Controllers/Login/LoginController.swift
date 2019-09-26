@@ -12,7 +12,7 @@ import RxSwift
 import RxCocoa
 
 protocol LoginControllerDelegate: UIViewController {
-    func didFinishLoggingIn()
+    func didFinishLoggingIn() //to tell homecontroller to fetch data
 }
 
 class LoginController: UIViewController {

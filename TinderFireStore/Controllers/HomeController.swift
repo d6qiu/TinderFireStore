@@ -9,11 +9,9 @@
 import UIKit
 import Firebase
 import JGProgressHUD
-
+import wobbly
 class HomeController: UIViewController, SettingsControllerDelegate, LoginControllerDelegate, CardViewDelegate{
     
-    
-
     let topStackView = TopNavigationStackView()
     let cardsDeckView : UIView = {
        let view = UIView()
@@ -42,9 +40,9 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if Auth.auth().currentUser == nil {
-            let loginController = LoginController()
-            loginController.delegate = self
-            let navController = UINavigationController(rootViewController: loginController)
+            let registrationController = RegistrationController()
+            registrationController.delegate = self
+            let navController = UINavigationController(rootViewController: registrationController)
             present(navController, animated: true)
         }
         
@@ -75,15 +73,16 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     
     fileprivate func setupButtonTargets() {
         topStackView.settingsButton.addTarget(self, action: #selector(handleSettings), for: .touchUpInside)
-
         bottomControls.refreshButton.addTarget(self, action: #selector(handleRefresh), for: .touchUpInside)
+        bottomControls.likeButton.addTarget(self, action: #selector(handleLike), for: .touchUpInside)
+        bottomControls.dislikeButton.addTarget(self, action: #selector(handleDislike), for: .touchUpInside)
     }
     
-    @objc fileprivate func handleRefresh() {
-        fetchUsersFromFirestore()
-    }
+    
+    
     
     var lastFetchedUser: User?
+    
     fileprivate func fetchUsersFromFirestore() {
         //guard let minAge = ...
         let minAge = user?.minSeekingAge ?? SettingsController.defaultMinSeekingAge //fix bug where a new registering user screen is occupied by a loading hud because early return due to nil minAge using guard statement
@@ -96,26 +95,92 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
         //let query = Firestore.firestore().collection("users").order(by: "uid").start(after: [lastFetchedUser?.uid ?? ""]).limit(to: 1)
         //if argument is nil, invalid query will crash
         let query = Firestore.firestore().collection("users").whereField("age", isGreaterThanOrEqualTo: minAge).whereField("age", isLessThanOrEqualTo: maxAge)
+        topCardView = nil // need to reset this everytime deck reset from save
         query.getDocuments { (snapshot, err) in
             hud.dismiss()
             if let err = err {
                 print(err)
                 return
             }
+            
+            var previousCardView: CardView?
+            
             snapshot?.documents.forEach({ (documentSnapshot) in
                 let userDictionary = documentSnapshot.data()
                 let user = User(dictionary: userDictionary)
                 if user.uid != Auth.auth().currentUser?.uid {
-                    self.setupCardFromUser(user: user)
+                    let cardView = self.setupCardFromUser(user: user)
+                    
+                    
+                    previousCardView?.nextCardView = cardView
+                    previousCardView = cardView
+                    
+                    if self.topCardView == nil { //set the first card as topcardview, since cards are added to below each other
+                        self.topCardView = cardView
+                    }
+                    
                 }
-                //self.cardViewModels.append(user.toCardViewModel())
-//                self.lastFetchedUser = user
             })
             //self.setupFirestoreUserCards() //this method will make each refresh load from cardviewmodels, will load the same old users even though they are swiped.
         }
     }
     
-    fileprivate func setupCardFromUser(user: User) {
+    var topCardView: CardView?
+    
+    @objc fileprivate func handleRefresh() {
+        if topCardView == nil { //only allow refresh when user swipes all the cards already
+            fetchUsersFromFirestore()
+        }
+    }
+    
+    @objc fileprivate func handleLike() {
+        performSwipeAnimation(translation: 700, angle: 15)
+    }
+    
+    @objc fileprivate func handleDislike() {
+        performSwipeAnimation(translation: -700, angle: -15)
+    }
+    
+    fileprivate func performSwipeAnimation(translation: CGFloat, angle: CGFloat) {
+        let duration = 0.5
+                let translationAnimation = CABasicAnimation(keyPath: "position.x") //specific keypaths on archive
+                translationAnimation.toValue = translation
+                translationAnimation.duration = duration
+                translationAnimation.fillMode = .forwards
+                translationAnimation.timingFunction = CAMediaTimingFunction(name: .easeOut) //begin quick and then slow
+                translationAnimation.isRemovedOnCompletion = false //animation wont cancel ultil completion
+
+                let rotationAnimation = CABasicAnimation(keyPath: "transform.rotation.z") //think of x y z axis
+                rotationAnimation.toValue = angle * CGFloat.pi / 180 //15 degrees
+                rotationAnimation.duration = duration
+                
+                let cardView = topCardView // create a varable in stack so wont change reference in completionblock (user could fast like mutiple)
+                topCardView = topCardView?.nextCardView
+                CATransaction.setCompletionBlock {
+                    cardView?.removeFromSuperview()
+                }
+
+                cardView?.layer.add(translationAnimation, forKey: "translation")
+                cardView?.layer.add(rotationAnimation, forKey: "rotation")
+
+                CATransaction.commit()
+                
+        //        UIView.animate(withDuration: 1.0, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.1, options: .curveEaseOut, animations: {
+        //            self.topCardView?.frame = CGRect(x: 600, y: 0, width: self.topCardView!.frame.width, height: self.topCardView!.frame.height)
+        //            let angle = 15 * CGFloat.pi / 180
+        //            self.topCardView?.transform = CGAffineTransform(rotationAngle: angle)
+        //
+        //        }) { (_) in
+        //            self.topCardView?.removeFromSuperview()
+        //            self.topCardView = self.topCardView?.nextCardView
+        //        }
+    }
+    
+    func didRemoveCard(cardView: CardView) {
+        self.topCardView = self.topCardView?.nextCardView
+    }
+    
+    fileprivate func setupCardFromUser(user: User) -> CardView {
         let cardView = CardView(frame: .zero)
         
         cardView.delegate = self
@@ -123,6 +188,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
         cardsDeckView.addSubview(cardView)
         cardsDeckView.sendSubviewToBack(cardView) //fix anchor flash, the aanchor that stack subviews on top os subviews, now subsview anchor stack below each other, order of cards are reversed in each pagination
         cardView.fillSuperview()
+        return cardView
     }
     
     func didTapMoreInfo(cardViewModel: CardViewModel) {
