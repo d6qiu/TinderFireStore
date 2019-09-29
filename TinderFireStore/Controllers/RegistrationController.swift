@@ -246,6 +246,7 @@ class RegistrationController: UIViewController {
     
     @objc fileprivate func handleGoToLogin() {
         let loginController = LoginController()
+        loginController.delegate = delegate //so homecontrller has reference to do didfinishloggingin to fetch data
         navigationController?.pushViewController(loginController, animated: true)
     }
     

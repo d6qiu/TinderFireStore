@@ -61,7 +61,7 @@ class RegistrationViewModel {
             }
             print("registered user:", result?.user.uid ?? "")
             
-            self.saveImageToFirebase(completion: completion)
+            self.saveImageToFirebase(completion: completion) //includes save info which save user dictionary into firestore
             
         }
     }

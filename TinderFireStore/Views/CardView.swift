@@ -12,6 +12,7 @@ import SDWebImage
 protocol CardViewDelegate {
     func didTapMoreInfo(cardViewModel: CardViewModel)
     func didRemoveCard(cardView: CardView)
+    func didSwipe(translationDirection: CGFloat)
 }
 
 class CardView: UIView {
@@ -171,7 +172,6 @@ class CardView: UIView {
     //view  rotates and translate according to user panning
     fileprivate func handleChanged(_ gesture: UIPanGestureRecognizer) {
         let translation = gesture.translation(in: nil)
-
         let degrees: CGFloat = translation.x / 20 //minimize rotatation per translation
         let angle = degrees * .pi / 180
         let rotationalTransformation = CGAffineTransform(rotationAngle: angle)
@@ -184,25 +184,33 @@ class CardView: UIView {
         //nil will get you this view
         let translationDirection: CGFloat = gesture.translation(in: nil).x > 0 ? 1 : -1
         let shouldDismissCard = abs(gesture.translation(in: nil).x) > threshold
-        UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.1, options: .curveEaseOut, animations: {
-            
-            if shouldDismissCard {
-                self.frame = CGRect(x: 600 * translationDirection, y: 0, width: self.frame.width, height: self.frame.height)
-            // below lines will make card go up and go left at the same time, above will go up and then go left
-//                let offScreenTransform = self.transform.translatedBy(x: 600, y: 0)
-//                self.transform = offScreenTransform
-            } else {
+        if shouldDismissCard {
+            self.delegate?.didSwipe(translationDirection: translationDirection)
+        } else {
+            UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.1, options: .curveEaseOut, animations: {
                 self.transform = .identity
-            }
-        }) { (_) in
-            self.transform = .identity //this line suppose to return cards back when swiped but since removeFromSuperView anyuway so this line is useless
-            if shouldDismissCard {
-                self.removeFromSuperview()
-                self.delegate?.didRemoveCard(cardView: self)
-//                self.frame = CGRect(x: 0, y: 0, width: self.superview!.frame.width, height: self.superview!.frame.height)
-            }
-            
+            })
         }
+        
+//        UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.1, options: .curveEaseOut, animations: {
+//
+//            if shouldDismissCard {
+//                //self.frame = CGRect(x: 600 * translationDirection, y: 0, width: self.frame.width, height: self.frame.height)
+//            // below lines will make card go up and go left at the same time, above will go up and then go left
+//                let offScreenTransform = self.transform.translatedBy(x: 600 * translationDirection, y: 0)
+//                self.transform = offScreenTransform
+//            } else {
+//                self.transform = .identity
+//            }
+//        }) { (_) in
+//            //self.transform = .identity //this line suppose to return cards back when swiped but since removeFromSuperView anyuway so this line is useless
+//            if shouldDismissCard {
+//                self.removeFromSuperview()
+//                self.delegate?.didRemoveCard(cardView: self)
+////                self.frame = CGRect(x: 0, y: 0, width: self.superview!.frame.width, height: self.superview!.frame.height)
+//            }
+//
+//        }
     }
     
     required init?(coder aDecoder: NSCoder) {

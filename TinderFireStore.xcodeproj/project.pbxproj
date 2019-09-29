@@ -30,8 +30,11 @@
 		E48B69DE23356DFC00A2482D /* PhotoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48B69DD23356DFC00A2482D /* PhotoController.swift */; };
 		E48F5705232C4377004B1113 /* FirebaseExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48F5704232C4377004B1113 /* FirebaseExtensions.swift */; };
 		E48F5707232C576D004B1113 /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48F5706232C576D004B1113 /* LoginController.swift */; };
+		E49A9991233FE0B800D11805 /* SendMessageButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49A9990233FE0B800D11805 /* SendMessageButton.swift */; };
+		E49A9995233FFC8400D11805 /* KeepSwipingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49A9994233FFC8400D11805 /* KeepSwipingButton.swift */; };
 		E4C4FA702300F326003E3987 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C4FA6F2300F326003E3987 /* CardView.swift */; };
 		E4C5F2C52332BFEF00F0C0FD /* UserDetailsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C5F2C42332BFEF00F0C0FD /* UserDetailsController.swift */; };
+		E4D3F990233D9DC6004AE75B /* MatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D3F98F233D9DC6004AE75B /* MatchView.swift */; };
 		E4DF175123204E1400C8E3FB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E4DF175023204E1400C8E3FB /* GoogleService-Info.plist */; };
 		E4DF175323206AAC00C8E3FB /* Bindable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4DF175223206AAC00C8E3FB /* Bindable.swift */; };
 		F83E239E9E1E4E086D6F5026 /* Pods_TinderFireStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B46E953C467D96DD8270DD9 /* Pods_TinderFireStore.framework */; };
@@ -65,8 +68,11 @@
 		E48B69DD23356DFC00A2482D /* PhotoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoController.swift; sourceTree = "<group>"; };
 		E48F5704232C4377004B1113 /* FirebaseExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseExtensions.swift; sourceTree = "<group>"; };
 		E48F5706232C576D004B1113 /* LoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
+		E49A9990233FE0B800D11805 /* SendMessageButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMessageButton.swift; sourceTree = "<group>"; };
+		E49A9994233FFC8400D11805 /* KeepSwipingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeepSwipingButton.swift; sourceTree = "<group>"; };
 		E4C4FA6F2300F326003E3987 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 		E4C5F2C42332BFEF00F0C0FD /* UserDetailsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDetailsController.swift; sourceTree = "<group>"; };
+		E4D3F98F233D9DC6004AE75B /* MatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchView.swift; sourceTree = "<group>"; };
 		E4DF175023204E1400C8E3FB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		E4DF175223206AAC00C8E3FB /* Bindable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bindable.swift; sourceTree = "<group>"; };
 		EA2D12C093117B2E37818585 /* Pods-TinderFireStore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TinderFireStore.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TinderFireStore/Pods-TinderFireStore.debug.xcconfig"; sourceTree = "<group>"; };
@@ -187,6 +193,9 @@
 				E4548C34231C5AD5003BF5DD /* CustomTextField.swift */,
 				E43BCDD02325EEB400A62B9A /* SettingsCell.swift */,
 				E46C58B42329548D009A7EFE /* AgeRangeCell.swift */,
+				E4D3F98F233D9DC6004AE75B /* MatchView.swift */,
+				E49A9990233FE0B800D11805 /* SendMessageButton.swift */,
+				E49A9994233FFC8400D11805 /* KeepSwipingButton.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -353,12 +362,14 @@
 				E48B69DE23356DFC00A2482D /* PhotoController.swift in Sources */,
 				E4DF175323206AAC00C8E3FB /* Bindable.swift in Sources */,
 				E46A64F8230BC7750083CCD7 /* HomeController.swift in Sources */,
+				E49A9991233FE0B800D11805 /* SendMessageButton.swift in Sources */,
 				E450810A231F45E200EB1D08 /* RegistrationViewModel.swift in Sources */,
 				E4548C35231C5AD5003BF5DD /* CustomTextField.swift in Sources */,
 				E48F5705232C4377004B1113 /* FirebaseExtensions.swift in Sources */,
 				E462BEBC22E2C34800432B7F /* HomeBottomControlsStackView.swift in Sources */,
 				E4C5F2C52332BFEF00F0C0FD /* UserDetailsController.swift in Sources */,
 				E46C58B52329548D009A7EFE /* AgeRangeCell.swift in Sources */,
+				E4D3F990233D9DC6004AE75B /* MatchView.swift in Sources */,
 				E403439D232C6BA0004D3CA1 /* LoginViewModel.swift in Sources */,
 				E4008254230F86BE001F5F86 /* Advertiser.swift in Sources */,
 				E462BEB922E2857B00432B7F /* Extensions.swift in Sources */,
@@ -369,6 +380,7 @@
 				E44B488322E6C50E00BDC717 /* TopNavigationStackView.swift in Sources */,
 				E44142452324978F00396F17 /* CustomImagePickerController.swift in Sources */,
 				E487B9B12319F20500773FDF /* RegistrationController.swift in Sources */,
+				E49A9995233FFC8400D11805 /* KeepSwipingButton.swift in Sources */,
 				E43BCDD12325EEB400A62B9A /* SettingsCell.swift in Sources */,
 				E42A574D23330DBB002CB6B5 /* SwipingPhotosController.swift in Sources */,
 				E40A443F230CDC9100AF5B1E /* User.swift in Sources */,

@@ -9,7 +9,6 @@
 import UIKit
 import Firebase
 import JGProgressHUD
-import wobbly
 class HomeController: UIViewController, SettingsControllerDelegate, LoginControllerDelegate, CardViewDelegate{
     
     let topStackView = TopNavigationStackView()
@@ -36,7 +35,8 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     
     fileprivate var user: User?
     fileprivate let hud = JGProgressHUD(style: .dark)
-        
+    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if Auth.auth().currentUser == nil {
@@ -45,7 +45,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
             let navController = UINavigationController(rootViewController: registrationController)
             present(navController, animated: true)
         }
-        
+
     }
     //refresh homecontroller after logging in, called in logincontroller
     func didFinishLoggingIn() {
@@ -60,15 +60,35 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
         }
         //theres get documents and get document
         Firestore.firestore().fetchCurrentUser { (user, err) in
+            self.hud.dismiss() //dismiss hud
             if let err = err {
                 print(err)
                 return
             }
-            self.hud.dismiss()
             self.user = user
-            self.fetchUsersFromFirestore()
+            self.fetchSwipes() //fetchusersfromfirestore is in it
+            //self.fetchUsersFromFirestore()
         }
 
+    }
+    
+    var swipes = [String : Int]()
+    
+    fileprivate func fetchSwipes() {
+        guard let uid = Auth.auth().currentUser?.uid else {return}
+        Firestore.firestore().collection("swipes").document(uid).getDocument { (snapshot, err) in
+            if let err = err {
+                print(err)
+                return
+            }
+            //when snapshot is nil because current user havent swiped at all, fetchusers regardless of current user swipes
+            guard let data = snapshot?.data() as? [String: Int] else {
+                self.fetchUsersFromFirestore()
+                return
+            }
+            self.swipes = data
+            self.fetchUsersFromFirestore()
+        }
     }
     
     fileprivate func setupButtonTargets() {
@@ -108,17 +128,15 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
             snapshot?.documents.forEach({ (documentSnapshot) in
                 let userDictionary = documentSnapshot.data()
                 let user = User(dictionary: userDictionary)
-                if user.uid != Auth.auth().currentUser?.uid {
+                let isNotCurrentUser = user.uid != Auth.auth().currentUser?.uid
+                let hasNotSwipedBefore = self.swipes[user.uid!] == nil // user.uid is one of the fetched users, not auth.currentuser, u know user uid cant be nil when uid is set upon registration
+                if isNotCurrentUser && hasNotSwipedBefore {
                     let cardView = self.setupCardFromUser(user: user)
-                    
-                    
                     previousCardView?.nextCardView = cardView
                     previousCardView = cardView
-                    
                     if self.topCardView == nil { //set the first card as topcardview, since cards are added to below each other
                         self.topCardView = cardView
                     }
-                    
                 }
             })
             //self.setupFirestoreUserCards() //this method will make each refresh load from cardviewmodels, will load the same old users even though they are swiped.
@@ -129,41 +147,103 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     
     @objc fileprivate func handleRefresh() {
         if topCardView == nil { //only allow refresh when user swipes all the cards already
-            fetchUsersFromFirestore()
+            //fetchUsersFromFirestore()
+            //cardsDeckView.subviews.forEach({$0.removeFromSuperview()})
+            fetchSwipes()
         }
     }
     
-    @objc fileprivate func handleLike() {
+    @objc  func handleLike() {
+        saveSwipeToFireStore(didLike: 1)
         performSwipeAnimation(translation: 700, angle: 15)
     }
     
-    @objc fileprivate func handleDislike() {
+    @objc  func handleDislike() {
+        saveSwipeToFireStore(didLike: 0)
         performSwipeAnimation(translation: -700, angle: -15)
+    }
+    
+    fileprivate func saveSwipeToFireStore(didLike: Int) {
+        guard let uid = Auth.auth().currentUser?.uid else {return}
+        guard let cardUID = topCardView?.cardViewModel.uid else {return}
+        let documentData = [cardUID: didLike]
+        Firestore.firestore().collection("swipes").document(uid).getDocument { (snapshot, err) in
+            if let err = err {
+                print(err)
+                return
+            }
+            if snapshot?.exists == true {
+                Firestore.firestore().collection("swipes").document(uid).updateData(documentData) { (err) in
+                    if let err = err {
+                        print(err)
+                        return
+                    }
+                    if didLike == 1 { //delay present matchView
+                        self.checkIfMatchExists(cardUID: cardUID)
+                    }
+                }
+            } else {
+                //must set once before update
+                Firestore.firestore().collection("swipes").document(uid).setData(documentData) { (err) in
+                    if let err = err {
+                        print(err)
+                        return
+                    }
+                    if didLike == 1 {
+                        self.checkIfMatchExists(cardUID: cardUID)
+                    }
+
+                }
+            }
+        }
+    }
+    
+    fileprivate func checkIfMatchExists(cardUID: String) {
+        Firestore.firestore().collection("swipes").document(cardUID).getDocument { (snapshot, err) in
+            if let err = err {
+                print(err)
+                return
+            }
+            guard let data = snapshot?.data() else {return}
+            guard let uid = Auth.auth().currentUser?.uid else {return}
+            let hasMatched = data[uid] as? Int == 1 //hasMatched will be nil if this user hasnt swiped for current user yet
+            if hasMatched {
+                self.presentMatchView(cardUID: cardUID)
+            }
+        }
+    }
+    
+    fileprivate func presentMatchView(cardUID: String) {
+        let matchView = MatchView()
+        matchView.cardUID = cardUID
+        matchView.currentUser = self.user
+        view.addSubview(matchView)
+        matchView.fillSuperview()
     }
     
     fileprivate func performSwipeAnimation(translation: CGFloat, angle: CGFloat) {
         let duration = 0.5
-                let translationAnimation = CABasicAnimation(keyPath: "position.x") //specific keypaths on archive
-                translationAnimation.toValue = translation
-                translationAnimation.duration = duration
-                translationAnimation.fillMode = .forwards
-                translationAnimation.timingFunction = CAMediaTimingFunction(name: .easeOut) //begin quick and then slow
-                translationAnimation.isRemovedOnCompletion = false //animation wont cancel ultil completion
+        let translationAnimation = CABasicAnimation(keyPath: "position.x") //specific keypaths on archive
+        translationAnimation.toValue = translation
+        translationAnimation.duration = duration
+        translationAnimation.fillMode = .forwards
+        translationAnimation.timingFunction = CAMediaTimingFunction(name: .easeOut) //begin quick and then slow
+        translationAnimation.isRemovedOnCompletion = false //animation wont cancel ultil completion
 
-                let rotationAnimation = CABasicAnimation(keyPath: "transform.rotation.z") //think of x y z axis
-                rotationAnimation.toValue = angle * CGFloat.pi / 180 //15 degrees
-                rotationAnimation.duration = duration
+        let rotationAnimation = CABasicAnimation(keyPath: "transform.rotation.z") //think of x y z axis
+        rotationAnimation.toValue = angle * CGFloat.pi / 180 //15 degrees
+        rotationAnimation.duration = duration
                 
-                let cardView = topCardView // create a varable in stack so wont change reference in completionblock (user could fast like mutiple)
-                topCardView = topCardView?.nextCardView
-                CATransaction.setCompletionBlock {
-                    cardView?.removeFromSuperview()
-                }
+        let cardView = topCardView // create a varable in stack so wont change reference in completionblock (user could fast like mutiple)
+        topCardView = topCardView?.nextCardView
+        CATransaction.setCompletionBlock {
+            cardView?.removeFromSuperview()
+        }
 
-                cardView?.layer.add(translationAnimation, forKey: "translation")
-                cardView?.layer.add(rotationAnimation, forKey: "rotation")
+        cardView?.layer.add(translationAnimation, forKey: "translation")
+        cardView?.layer.add(rotationAnimation, forKey: "rotation")
 
-                CATransaction.commit()
+        CATransaction.commit()
                 
         //        UIView.animate(withDuration: 1.0, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 0.1, options: .curveEaseOut, animations: {
         //            self.topCardView?.frame = CGRect(x: 600, y: 0, width: self.topCardView!.frame.width, height: self.topCardView!.frame.height)
@@ -178,6 +258,14 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     
     func didRemoveCard(cardView: CardView) {
         self.topCardView = self.topCardView?.nextCardView
+    }
+    
+    func didSwipe(translationDirection: CGFloat) {
+        if translationDirection == 1{
+            handleLike()
+        } else {
+            handleDislike()
+        }
     }
     
     fileprivate func setupCardFromUser(user: User) -> CardView {
@@ -202,6 +290,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
         let settingsController = SettingsController()
         settingsController.delegate = self
         let navController = UINavigationController(rootViewController: settingsController)
+        navController.modalPresentationStyle = .fullScreen //because ios 13 update need to set fullscreen otherwise wont trigger viewdidappear
         present(navController, animated: true)
     }
     
