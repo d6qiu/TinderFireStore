@@ -11,7 +11,8 @@ import Firebase
 struct Match {
     let name, profileImageUrl: String
     init(dictionary: [String: Any]) {
-        self.name = dictionary[name]
+        self.name = dictionary["name"] as? String ?? ""
+        self.profileImageUrl = dictionary["profileImageUrl"] as? String ?? ""
     }
 }
 
@@ -48,13 +49,7 @@ class MatchesMessagesController: ListController<MatchCell, Match>, UICollectionV
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //of type Match, this is the cache
-        items = [
-            .init(name: "test", profileImageUrl: "profile url"),
-            .init(name: "1", profileImageUrl: "profile url"),
-            .init(name: "2", profileImageUrl: "profile url")
-        ]
-        
+        //item is of type Match, items is the cache
         fetchMatches()
         
         collectionView.backgroundColor = .white
@@ -77,18 +72,24 @@ class MatchesMessagesController: ListController<MatchCell, Match>, UICollectionV
             }
             var matches = [Match]()
             querySnapshot?.documents.forEach({ (documentSnapshot) in
-                
+                let dict = documentSnapshot.data()
+                matches.append(.init(dictionary: dict))
             })
+            
+            self.items = matches
+            self.collectionView.reloadData()
         }
+    }
+    //avoid overlap with shadow
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return .init(top: 16, left: 0, bottom: 16, right: 0)
     }
     
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return .init(width: 120, height: 140)
     }
-    
-    
-    
+        
     @objc fileprivate func handleBack() {
         navigationController?.popViewController(animated: true)
     }

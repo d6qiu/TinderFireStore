@@ -119,7 +119,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
         //cant not filter(whereField) and then order on different fields at the same time
         //let query = Firestore.firestore().collection("users").order(by: "uid").start(after: [lastFetchedUser?.uid ?? ""]).limit(to: 1)
         //if argument is nil, invalid query will crash
-        let query = Firestore.firestore().collection("users").whereField("age", isGreaterThanOrEqualTo: minAge).whereField("age", isLessThanOrEqualTo: maxAge)
+        let query = Firestore.firestore().collection("users").whereField("age", isGreaterThanOrEqualTo: minAge).whereField("age", isLessThanOrEqualTo: maxAge).limit(to: 10)
         topCardView = nil // need to reset this everytime deck reset from save
         query.getDocuments { (snapshot, err) in
             hud.dismiss()
@@ -133,6 +133,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
             snapshot?.documents.forEach({ (documentSnapshot) in
                 let userDictionary = documentSnapshot.data()
                 let user = User(dictionary: userDictionary)
+                self.users[user.uid ?? ""] = user
                 let isNotCurrentUser = user.uid != Auth.auth().currentUser?.uid
                 let hasNotSwipedBefore = self.swipes[user.uid!] == nil // user.uid is one of the fetched users, not auth.currentuser, u know user uid cant be nil when uid is set upon registration
                 if isNotCurrentUser && hasNotSwipedBefore {
@@ -147,6 +148,8 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
             //self.setupFirestoreUserCards() //this method will make each refresh load from cardviewmodels, will load the same old users even though they are swiped.
         }
     }
+    //cache all users because checkifMatchesexist dont have carduser objects, need them save
+    var users = [String:User]()
     
     var topCardView: CardView?
     
@@ -158,7 +161,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
         }
     }
     
-    @objc  func handleLike() {
+    @objc func handleLike() {
         saveSwipeToFireStore(didLike: 1)
         performSwipeAnimation(translation: 700, angle: 15)
     }
@@ -213,7 +216,27 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
             guard let uid = Auth.auth().currentUser?.uid else {return}
             let hasMatched = data[uid] as? Int == 1 //hasMatched will be nil if this user hasnt swiped for current user yet
             if hasMatched {
+                guard let cardUser = self.users[cardUID] else {return}
                 self.presentMatchView(cardUID: cardUID)
+                let data = ["name": cardUser.name ?? "", "profileImageUrl": cardUser.imageUrl ?? "", "uid": cardUID, "timestamp": Timestamp(date: Date())] as [String : Any]
+                Firestore.firestore().collection("matches_messages").document(uid).collection("matches").document(cardUID).setData(data) { (err) in
+                    if let err = err {
+                        print(err)
+                        return
+                    }
+                    
+                }
+                
+                guard let currentUser = self.user else {return}
+                let reverseMatchData = ["name": currentUser.name ?? "", "profileImageUrl": currentUser.imageUrl ?? "", "uid": uid, "timestamp" : Timestamp(date: Date())] as [String: Any]
+                Firestore.firestore().collection("matches_messages").document(cardUID).collection("matches").document(uid).setData(reverseMatchData) { (err) in
+                    if let err = err {
+                        print(err)
+                        return
+                    }
+                    
+                }
+                
             }
         }
     }
