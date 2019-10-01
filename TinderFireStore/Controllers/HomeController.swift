@@ -26,6 +26,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.navigationBar.isHidden = true
         setupButtonTargets()
         setupLayout() // view.bottomAnchor is the real bottom edge
         //layout guide is a dummy view object with variables like edge constraints or height
@@ -93,13 +94,17 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     
     fileprivate func setupButtonTargets() {
         topStackView.settingsButton.addTarget(self, action: #selector(handleSettings), for: .touchUpInside)
+        topStackView.messageButton.addTarget(self, action: #selector(handleMessages), for: .touchUpInside)
         bottomControls.refreshButton.addTarget(self, action: #selector(handleRefresh), for: .touchUpInside)
         bottomControls.likeButton.addTarget(self, action: #selector(handleLike), for: .touchUpInside)
         bottomControls.dislikeButton.addTarget(self, action: #selector(handleDislike), for: .touchUpInside)
     }
     
     
-    
+    @objc fileprivate func handleMessages() {
+        let matchesMessagesController = MatchesMessagesController()
+        navigationController?.pushViewController(matchesMessagesController, animated: true)
+    }
     
     var lastFetchedUser: User?
     

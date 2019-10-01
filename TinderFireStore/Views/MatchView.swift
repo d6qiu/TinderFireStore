@@ -25,9 +25,10 @@ class MatchView: UIView {
                     return
                 }
                 guard let dict = snapshot?.data() else {return}
-                let user = User(dictionary: dict)
-                let url = URL(string: user.imageUrl ?? "")
+                let cardUser = User(dictionary: dict)
+                let url = URL(string: cardUser.imageUrl ?? "")
                 self.cardUserImageView.sd_setImage(with: url)
+                self.descriptionLabel.text = "You and \(cardUser.name ?? "") have liked\neach other"
                 let currentUserImageUrl = URL(string: self.currentUser.imageUrl ?? "")
                 self.currentUserImageView.sd_setImage(with: currentUserImageUrl) { (_, _, _, _) in
                     self.setupAnimations()
