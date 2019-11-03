@@ -9,10 +9,10 @@
 import UIKit
 
 protocol ProducesCardViewModel {
-    func toCardViewModel() -> CardViewModel
+    func convertModelToPosterViewModel() -> PosterViewModel
 }
 
-class CardViewModel {
+class PosterViewModel {
     let uid: String
     let imageUrls: [String] //one slide include mutiple photots 
     let attributedString: NSAttributedString
@@ -37,14 +37,14 @@ class CardViewModel {
     //Reactuve programming
     var imageIndexObserver: ((Int, String?) -> ())?
     
-    func advanceToNextPhoto() {
+    func goToNextPic() {
         let newIndex = min(imageIndex + 1, imageUrls.count - 1)
         if newIndex != imageIndex { //does this check so cardview wont call the same url session again if same index
             imageIndex = newIndex
         }
     }
     
-    func goToPreviousPhoto() {
+    func backToPreviousPic() {
         let newIndex = max(0,imageIndex - 1)
         if newIndex != imageIndex {
             imageIndex = newIndex

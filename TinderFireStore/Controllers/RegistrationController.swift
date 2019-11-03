@@ -53,6 +53,14 @@ class RegistrationController: UIViewController {
         return tf
     }()
     
+    let ageTextField: UITextField = {
+        let tf = CustomTextField(padding: 16, height: 50)
+        tf.placeholder = "Enter age"
+        tf.backgroundColor = .white
+        tf.addTarget(self, action: #selector(handleTextChange), for: .editingChanged)
+        return tf
+    }()
+    
     let emailTextField: UITextField = {
         let tf = CustomTextField(padding: 16, height: 50)
         tf.placeholder = "Enter email"
@@ -76,6 +84,8 @@ class RegistrationController: UIViewController {
             registrationViewModel.fullName = textField.text
         } else if textField == emailTextField {
             registrationViewModel.email = textField.text
+        } else if textField == ageTextField {
+            registrationViewModel.age = Int(textField.text ?? "") //Int("") return nil, if nil then button is diabled
         } else {
             registrationViewModel.password = textField.text //changes model properties triggers check validity and update in UI
         }
@@ -102,7 +112,7 @@ class RegistrationController: UIViewController {
     @objc fileprivate func handleRegister() {
         self.handleTapDismiss()// dismiss keyboard with return view to original positiion
 
-        registrationViewModel.performRegistration { [weak self](err) in //unown is fine also
+        registrationViewModel.register { [weak self](err) in //unown is fine also
             if let err = err {
                 print(err)
                 self?.showHUDWithError(error: err)
@@ -131,6 +141,7 @@ class RegistrationController: UIViewController {
     lazy var verticalStackView: UIStackView = {
        let sv = UIStackView(arrangedSubviews: [
         fullNameTextField,
+        ageTextField,
         emailTextField,
         passwordTextField,
         registerButton
@@ -167,7 +178,7 @@ class RegistrationController: UIViewController {
     let registrationViewModel = RegistrationViewModel()
     //set up reactors to viewmodel value changes 
     fileprivate func setupRegistrationViewModelObserver() {
-        registrationViewModel.bindableIsFormValid.observer = { [unowned self](isFormValid) in //self is never nil in this closure because needs self to trigger change of value in model in the first place
+        registrationViewModel.bindableEnableRegisterButton.observer = { [unowned self](isFormValid) in //self is never nil in this closure because needs self to trigger change of value in model in the first place
             guard let isFormValid = isFormValid else {return}
             if isFormValid {
                 self.registerButton.isEnabled = true
@@ -182,7 +193,7 @@ class RegistrationController: UIViewController {
         registrationViewModel.bindableImage.observer = { [unowned self](image) in
             self.selectPhotoButton.setImage(image?.withRenderingMode(.alwaysOriginal), for: .normal)
         }
-        registrationViewModel.binadableIsRegistering.observer = { [unowned self](isRegistering) in
+        registrationViewModel.binadableShowRegisterHUD.observer = { [unowned self](isRegistering) in
             guard let isRegistering = isRegistering else {return}
             if isRegistering {
                 self.registeringHUD.textLabel.text = "Register"
@@ -305,7 +316,7 @@ extension RegistrationController: UIImagePickerControllerDelegate, UINavigationC
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         let image = info[.originalImage] as? UIImage
         registrationViewModel.bindableImage.value = image
-        registrationViewModel.checkFormValidity() //checkfromvalidity gets called when text changes, not when image selected
+        registrationViewModel.checkRegisterInputValid() //checkfromvalidity gets called when text changes, not when image selected
         dismiss(animated: true)
     }
     

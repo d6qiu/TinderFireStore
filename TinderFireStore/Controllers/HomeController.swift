@@ -21,7 +21,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     let bottomControls = HomeBottomControlsStackView()
     
 
-    var cardViewModels = [CardViewModel]()
+    var cardViewModels = [PosterViewModel]()
     
     
     override func viewDidLoad() {
@@ -300,14 +300,14 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
         let cardView = CardView(frame: .zero)
         
         cardView.delegate = self
-        cardView.cardViewModel = user.toCardViewModel()
+        cardView.cardViewModel = user.convertModelToPosterViewModel()
         cardsDeckView.addSubview(cardView)
         cardsDeckView.sendSubviewToBack(cardView) //fix anchor flash, the aanchor that stack subviews on top os subviews, now subsview anchor stack below each other, order of cards are reversed in each pagination
         cardView.fillSuperview()
         return cardView
     }
     
-    func didTapMoreInfo(cardViewModel: CardViewModel) {
+    func didTapMoreInfo(cardViewModel: PosterViewModel) {
         let userDetailsController = UserDetailsController()
         userDetailsController.cardViewModel = cardViewModel
         present(userDetailsController, animated: true)

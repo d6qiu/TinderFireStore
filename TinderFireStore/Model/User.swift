@@ -32,7 +32,7 @@ struct User: ProducesCardViewModel {
         self.maxSeekingAge = dictionary["maxSeekingAge"] as? Int
     }
     
-    func toCardViewModel() -> CardViewModel {
+    func convertModelToPosterViewModel() -> PosterViewModel {
         
         let attributedText = NSMutableAttributedString(string: name ?? "", attributes: [.font: UIFont.systemFont(ofSize: 32, weight: .heavy)])
         
@@ -47,7 +47,7 @@ struct User: ProducesCardViewModel {
         if let url = imageUrl2 {imageUrls.append(url)}
         if let url = imageUrl3 {imageUrls.append(url)}
 
-        return CardViewModel(uid: self.uid ?? "",imageNames: imageUrls, attributedString: attributedText, textAlignment: .left)
+        return PosterViewModel(uid: self.uid ?? "",imageNames: imageUrls, attributedString: attributedText, textAlignment: .left)
     }
 }
 

@@ -10,9 +10,9 @@ import UIKit
 import Firebase
 class RegistrationViewModel {
     
-    var binadableIsRegistering = Bindable<Bool>()
+    var binadableShowRegisterHUD = Bindable<Bool>()
     
-    var bindableIsFormValid = Bindable<Bool>()
+    var bindableEnableRegisterButton = Bindable<Bool>()
     //    var isFormValidObserver: ((Bool) -> ())?
     
     //then only need to set the value and reactor
@@ -29,30 +29,36 @@ class RegistrationViewModel {
     
     var fullName: String? {
         didSet { //changes in state triggers action, setup button in view or controller class, should trigger action in UI
-            checkFormValidity()
+            checkRegisterInputValid()
         }
     }
     var email: String? {
         didSet {
-            checkFormValidity()
+            checkRegisterInputValid()
         }
     }
     var password: String? {
         didSet {
-            checkFormValidity()
+            checkRegisterInputValid()
+        }
+    }
+    
+    var age:Int? {
+        didSet {
+            checkRegisterInputValid()
         }
     }
     //checks own property, self calls a functor that makes another class do stuff
-    func checkFormValidity() {
-        let isFormValid = fullName?.isEmpty == false && email?.isEmpty == false && password?.isEmpty == false && bindableImage.value != nil
-        bindableIsFormValid.value = isFormValid
+    func checkRegisterInputValid() {
+        let isFormValid = fullName?.isEmpty == false && email?.isEmpty == false && password?.isEmpty == false && bindableImage.value != nil && age != nil
+        bindableEnableRegisterButton.value = isFormValid
     }
     
     
-    func performRegistration(completion: @escaping (Error?) -> ()) {
+    func register(completion: @escaping (Error?) -> ()) {
         guard let email = email, let pass = password else {return}
         
-        binadableIsRegistering.value = true //reactor already settted up in another class, calls reactor in bindable
+        binadableShowRegisterHUD.value = true //reactor already settted up in another class, calls reactor in bindable
         
         Auth.auth().createUser(withEmail: email, password: pass) { (result, err) in
             if let err = err {
@@ -61,14 +67,14 @@ class RegistrationViewModel {
             }
             print("registered user:", result?.user.uid ?? "")
             
-            self.saveImageToFirebase(completion: completion) //includes save info which save user dictionary into firestore
+            self.storeProfileImageFirebaseStorage(completion: completion) //includes save info which save user dictionary into firestore
             
         }
     }
     
    
     
-    fileprivate func saveImageToFirebase(completion: @escaping (Error?) -> ()) {
+    fileprivate func storeProfileImageFirebaseStorage(completion: @escaping (Error?) -> ()) {
         let filename = UUID().uuidString
         let ref = Storage.storage().reference(withPath: "/images/\(filename)")
         let imageData = self.bindableImage.value?.jpegData(compressionQuality: 0.75) ?? Data()
@@ -83,20 +89,20 @@ class RegistrationViewModel {
                     completion(err)
                     return
                 }
-                self.binadableIsRegistering.value = false
+                self.binadableShowRegisterHUD.value = false
                 
                 let imageUrl = url?.absoluteString ?? ""
-                self.saveInfoToFirestore(imageUrl: imageUrl, completion: completion)
+                self.saveRegisterDataFirestore(imageUrl: imageUrl, completion: completion)
             })
         })
     }
     
-    fileprivate func saveInfoToFirestore(imageUrl: String,completion: @escaping (Error?) -> ()) {
+    fileprivate func saveRegisterDataFirestore(imageUrl: String,completion: @escaping (Error?) -> ()) {
         let uid = Auth.auth().currentUser?.uid ?? ""
         let docData: [String: Any] = ["fullName": fullName ?? "",
                        "uid": uid,
                        "imageUrl": imageUrl,
-//                       "age": 18,
+                       "age": age ?? 18,
                         "minSeekingAge": SettingsController.defaultMinSeekingAge,
                         "maxSeekingAge": SettingsController.defaultMaxSeekingAge
                        

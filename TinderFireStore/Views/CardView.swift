@@ -10,7 +10,7 @@ import UIKit
 import SDWebImage
 
 protocol CardViewDelegate {
-    func didTapMoreInfo(cardViewModel: CardViewModel)
+    func didTapMoreInfo(cardViewModel: PosterViewModel)
     func didRemoveCard(cardView: CardView)
     func didSwipe(translationDirection: CGFloat)
 }
@@ -22,7 +22,7 @@ class CardView: UIView {
     var delegate: CardViewDelegate?
     
     //didset invoked upon loading homecontroller in setupcardfromuser
-    var cardViewModel: CardViewModel! {
+    var cardViewModel: PosterViewModel! {
         didSet {
 //            let imageName = cardViewModel.imageUrls.first ?? "" //imageNames[0] not defined optional, if count == 0 will crash
 //            let url = URL(string: imageName)
@@ -86,9 +86,9 @@ class CardView: UIView {
         let shouldAdvanceNextPhoto = tapLocation.x > frame.width / 2 ? true : false
         
         if shouldAdvanceNextPhoto {
-            cardViewModel.advanceToNextPhoto()
+            cardViewModel.goToNextPic()
         } else {
-            cardViewModel.goToPreviousPhoto()
+            cardViewModel.backToPreviousPic()
         }
         
     }

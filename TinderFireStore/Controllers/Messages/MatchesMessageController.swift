@@ -65,7 +65,7 @@ class MatchesMessagesController: ListController<MatchCell, Match>, UICollectionV
     
     fileprivate func fetchMatches() {
         guard let currentUserId = Auth.auth().currentUser?.uid else {return}
-        Firestore.firestore().collection("matchs_messages").document(currentUserId).collection("matches").getDocuments { (querySnapshot, err) in
+        Firestore.firestore().collection("matches_messages").document(currentUserId).collection("matches").getDocuments { (querySnapshot, err) in
             if let err = err {
                 print(err)
                 return
@@ -88,6 +88,12 @@ class MatchesMessagesController: ListController<MatchCell, Match>, UICollectionV
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return .init(width: 120, height: 140)
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let match = items[indexPath.item]
+        let chatLogController = ChatLogController(match: match)
+        navigationController?.pushViewController(chatLogController, animated: true)
     }
         
     @objc fileprivate func handleBack() {

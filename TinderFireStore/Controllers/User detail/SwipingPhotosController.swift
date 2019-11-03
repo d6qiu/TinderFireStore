@@ -10,7 +10,7 @@ import UIKit
 
 class SwipingPhotosController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate{
    
-    var cardViewModel: CardViewModel! {
+    var cardViewModel: PosterViewModel! {
         didSet {
             controllers = cardViewModel.imageUrls.map({ (imageUrl) -> UIViewController in
                 return PhotoController(imageUrl: imageUrl)

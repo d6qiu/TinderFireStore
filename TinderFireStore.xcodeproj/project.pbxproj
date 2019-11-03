@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E4008252230F3CC7001F5F86 /* CardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4008251230F3CC7001F5F86 /* CardViewModel.swift */; };
+		E4008252230F3CC7001F5F86 /* PosterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4008251230F3CC7001F5F86 /* PosterViewModel.swift */; };
 		E4008254230F86BE001F5F86 /* Advertiser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4008253230F86BE001F5F86 /* Advertiser.swift */; };
 		E403439D232C6BA0004D3CA1 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E403439C232C6BA0004D3CA1 /* LoginViewModel.swift */; };
 		E40A443F230CDC9100AF5B1E /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40A443E230CDC9100AF5B1E /* User.swift */; };
+		E42529AE2343C9F100ECE00F /* ChatLogController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42529AD2343C9F100ECE00F /* ChatLogController.swift */; };
 		E42A574D23330DBB002CB6B5 /* SwipingPhotosController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42A574C23330DBB002CB6B5 /* SwipingPhotosController.swift */; };
 		E43BCDD12325EEB400A62B9A /* SettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43BCDD02325EEB400A62B9A /* SettingsCell.swift */; };
 		E43EC06C22E186EC002EF120 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E43EC06B22E186EC002EF120 /* AppDelegate.swift */; };
@@ -35,6 +36,8 @@
 		E48B69DE23356DFC00A2482D /* PhotoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48B69DD23356DFC00A2482D /* PhotoController.swift */; };
 		E48F5705232C4377004B1113 /* FirebaseExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48F5704232C4377004B1113 /* FirebaseExtensions.swift */; };
 		E48F5707232C576D004B1113 /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48F5706232C576D004B1113 /* LoginController.swift */; };
+		E4917DE323442BF500A6111F /* CircularImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4917DE223442BF500A6111F /* CircularImageView.swift */; };
+		E4917DE5234433B500A6111F /* MessagesNavBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4917DE4234433B500A6111F /* MessagesNavBar.swift */; };
 		E49A9991233FE0B800D11805 /* SendMessageButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49A9990233FE0B800D11805 /* SendMessageButton.swift */; };
 		E49A9995233FFC8400D11805 /* KeepSwipingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49A9994233FFC8400D11805 /* KeepSwipingButton.swift */; };
 		E4C4FA702300F326003E3987 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C4FA6F2300F326003E3987 /* CardView.swift */; };
@@ -49,10 +52,11 @@
 /* Begin PBXFileReference section */
 		0B46E953C467D96DD8270DD9 /* Pods_TinderFireStore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TinderFireStore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B54A668C6EC933EA24321740 /* Pods-TinderFireStore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TinderFireStore.release.xcconfig"; path = "Pods/Target Support Files/Pods-TinderFireStore/Pods-TinderFireStore.release.xcconfig"; sourceTree = "<group>"; };
-		E4008251230F3CC7001F5F86 /* CardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardViewModel.swift; sourceTree = "<group>"; };
+		E4008251230F3CC7001F5F86 /* PosterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PosterViewModel.swift; sourceTree = "<group>"; };
 		E4008253230F86BE001F5F86 /* Advertiser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Advertiser.swift; sourceTree = "<group>"; };
 		E403439C232C6BA0004D3CA1 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		E40A443E230CDC9100AF5B1E /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		E42529AD2343C9F100ECE00F /* ChatLogController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogController.swift; sourceTree = "<group>"; };
 		E42A574C23330DBB002CB6B5 /* SwipingPhotosController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipingPhotosController.swift; sourceTree = "<group>"; };
 		E43BCDD02325EEB400A62B9A /* SettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsCell.swift; sourceTree = "<group>"; };
 		E43EC06822E186EC002EF120 /* TinderFireStore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TinderFireStore.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -79,6 +83,8 @@
 		E48B69DD23356DFC00A2482D /* PhotoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoController.swift; sourceTree = "<group>"; };
 		E48F5704232C4377004B1113 /* FirebaseExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseExtensions.swift; sourceTree = "<group>"; };
 		E48F5706232C576D004B1113 /* LoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
+		E4917DE223442BF500A6111F /* CircularImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularImageView.swift; sourceTree = "<group>"; };
+		E4917DE4234433B500A6111F /* MessagesNavBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesNavBar.swift; sourceTree = "<group>"; };
 		E49A9990233FE0B800D11805 /* SendMessageButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMessageButton.swift; sourceTree = "<group>"; };
 		E49A9994233FFC8400D11805 /* KeepSwipingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeepSwipingButton.swift; sourceTree = "<group>"; };
 		E4C4FA6F2300F326003E3987 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
@@ -138,7 +144,7 @@
 			isa = PBXGroup;
 			children = (
 				E4508109231F45E200EB1D08 /* RegistrationViewModel.swift */,
-				E4008251230F3CC7001F5F86 /* CardViewModel.swift */,
+				E4008251230F3CC7001F5F86 /* PosterViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -197,6 +203,7 @@
 				E4461B1D2342A33100900308 /* ListController.swift */,
 				E4461B1F2342A33D00900308 /* HeaderController.swift */,
 				E4461B212342A34B00900308 /* HeaderFooterController.swift */,
+				E4917DE223442BF500A6111F /* CircularImageView.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -214,6 +221,7 @@
 				E49A9990233FE0B800D11805 /* SendMessageButton.swift */,
 				E49A9994233FFC8400D11805 /* KeepSwipingButton.swift */,
 				E4461B1923429C0B00900308 /* MatchesNavBar.swift */,
+				E4917DE4234433B500A6111F /* MessagesNavBar.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -231,6 +239,7 @@
 			isa = PBXGroup;
 			children = (
 				E4DF8CF52341BF690068CAB9 /* MatchesMessageController.swift */,
+				E42529AD2343C9F100ECE00F /* ChatLogController.swift */,
 			);
 			path = Messages;
 			sourceTree = "<group>";
@@ -395,6 +404,7 @@
 				E462BEBC22E2C34800432B7F /* HomeBottomControlsStackView.swift in Sources */,
 				E4461B202342A33D00900308 /* HeaderController.swift in Sources */,
 				E4461B1C2342A32100900308 /* ListCell.swift in Sources */,
+				E4917DE323442BF500A6111F /* CircularImageView.swift in Sources */,
 				E4C5F2C52332BFEF00F0C0FD /* UserDetailsController.swift in Sources */,
 				E4461B1E2342A33100900308 /* ListController.swift in Sources */,
 				E46C58B52329548D009A7EFE /* AgeRangeCell.swift in Sources */,
@@ -404,13 +414,15 @@
 				E462BEB922E2857B00432B7F /* Extensions.swift in Sources */,
 				E43EC06C22E186EC002EF120 /* AppDelegate.swift in Sources */,
 				E4461B222342A34B00900308 /* HeaderFooterController.swift in Sources */,
-				E4008252230F3CC7001F5F86 /* CardViewModel.swift in Sources */,
+				E4008252230F3CC7001F5F86 /* PosterViewModel.swift in Sources */,
 				E4461B1A23429C0B00900308 /* MatchesNavBar.swift in Sources */,
 				E4C4FA702300F326003E3987 /* CardView.swift in Sources */,
 				E44142432324762A00396F17 /* SettingsController.swift in Sources */,
 				E44B488322E6C50E00BDC717 /* TopNavigationStackView.swift in Sources */,
+				E4917DE5234433B500A6111F /* MessagesNavBar.swift in Sources */,
 				E44142452324978F00396F17 /* CustomImagePickerController.swift in Sources */,
 				E487B9B12319F20500773FDF /* RegistrationController.swift in Sources */,
+				E42529AE2343C9F100ECE00F /* ChatLogController.swift in Sources */,
 				E49A9995233FFC8400D11805 /* KeepSwipingButton.swift in Sources */,
 				E43BCDD12325EEB400A62B9A /* SettingsCell.swift in Sources */,
 				E42A574D23330DBB002CB6B5 /* SwipingPhotosController.swift in Sources */,

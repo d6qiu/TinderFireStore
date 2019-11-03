@@ -9,7 +9,7 @@
 import UIKit
 class UserDetailsController: UIViewController, UIScrollViewDelegate {
 
-    var cardViewModel: CardViewModel! {
+    var cardViewModel: PosterViewModel! {
         didSet {
             infoLabel.attributedText = cardViewModel.attributedString
             infoLabel.textAlignment = cardViewModel.textAlignment

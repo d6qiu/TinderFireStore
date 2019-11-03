@@ -13,10 +13,10 @@ struct Advertiser: ProducesCardViewModel {
     let brandName: String
     let posterPhotoName: String
     
-    func toCardViewModel() -> CardViewModel {
+    func convertModelToPosterViewModel() -> PosterViewModel {
         let attributedString = NSMutableAttributedString(string: title
             , attributes: [.font:  UIFont.systemFont(ofSize: 34, weight: .heavy)])
         attributedString.append(NSAttributedString(string: "\n" + brandName, attributes: [.font: UIFont.systemFont(ofSize: 24, weight: .bold)]))
-        return CardViewModel(uid: "", imageNames: [posterPhotoName], attributedString: attributedString, textAlignment: .center)
+        return PosterViewModel(uid: "", imageNames: [posterPhotoName], attributedString: attributedString, textAlignment: .center)
     }
 }
