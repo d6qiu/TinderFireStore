@@ -86,7 +86,7 @@ class UserDetailsController: UIViewController, UIScrollViewDelegate {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         let swipingView = swipingPhotosController.view!
-        swipingView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.width + extraSwipingViewHeight) //since i didnt use anchor imageview, its frame is changed by other ui elements when layout subviews from its orginal frame, that why need to change it back here
+        swipingView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.width + extraSwipingViewHeight) //since i didnt use anchor to set contraints, swipingview's original frame is changed by other ui elements when layout subviews, that why need to change it back here
     }
     
     override func viewDidLoad() {

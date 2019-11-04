@@ -102,7 +102,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     
     
     @objc fileprivate func handleMessages() {
-        let matchesMessagesController = MatchesMessagesController()
+        let matchesMessagesController = MatchesPoolController()
         navigationController?.pushViewController(matchesMessagesController, animated: true)
     }
     
@@ -191,7 +191,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
                     }
                 }
             } else {
-                //must set once before update
+                //must set once before update // this is the first swipe for current user
                 Firestore.firestore().collection("swipes").document(uid).setData(documentData) { (err) in
                     if let err = err {
                         print(err)

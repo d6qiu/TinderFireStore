@@ -151,7 +151,7 @@ class CardView: UIView {
     }
     //executed when view draws itself, this stage, cardview or self.frame is not zero anymore
     override func layoutSubviews() {
-        gradientLayer.frame = self.frame //self.frame is not zero only after self.init(), cardview is not controller's view so cant use view.bounds 
+        gradientLayer.frame = self.frame //self.frame is not zero only after self.init(), more precisely, not zero after Homecontroller anchored poster view. posterview is not Homecontroller's view so cant use view.bounds
     }
     
     

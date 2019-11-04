@@ -7,7 +7,7 @@
 //
 
 import UIKit
-class MatchesNavBar: UIView {
+class MatchesPoolNavBar: UIView {
     
     let backButton = UIButton(image: #imageLiteral(resourceName: "app_icon"), tintColor: .gray)
     override init(frame: CGRect) {

@@ -20,16 +20,18 @@ class MessageCell: ListCell<Message> {
     }
 }
 
-class ChatLogController: ListController<MessageCell, Message>, UICollectionViewDelegateFlowLayout{
+class SingleChatController: ListController<MessageCell, Message>, UICollectionViewDelegateFlowLayout{
     
-    let messageNavBar = MessagesNavBar()
     
     fileprivate let navBarHeight:CGFloat = 120
     
     fileprivate let match: Match
+        
+    fileprivate lazy var singleChatNavBar = SingleChatNavBar(match: match)
+
     
     init(match: Match) {
-        self.match = match
+        self.match = match //if there is a super class, in init, must initialize all instance variables before calling super.init()
         super.init()
     }
     
@@ -38,11 +40,11 @@ class ChatLogController: ListController<MessageCell, Message>, UICollectionViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.addSubview(messageNavBar)
-        messageNavBar.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, size: .init(width: 0, height: navBarHeight))
-        collectionView.contentInset.top = navBarHeight
+        view.addSubview(singleChatNavBar)
+        singleChatNavBar.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, size: .init(width: 0, height: navBarHeight))
+        collectionView.contentInset.top = navBarHeight //move collection view's content down to leave space for messageNavBar
         
-        messageNavBar.backButton.addTarget(self, action: #selector(handleBack), for: .touchUpInside)
+        singleChatNavBar.backButton.addTarget(self, action: #selector(handleBack), for: .touchUpInside)
     }
     
     @objc fileprivate func handleBack() {

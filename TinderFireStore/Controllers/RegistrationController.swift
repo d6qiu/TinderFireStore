@@ -280,7 +280,9 @@ class RegistrationController: UIViewController {
         gradientLayer.colors = [topColor.cgColor, bottomColor.cgColor] //has to be cgcolor
         gradientLayer.locations = [0,1]
         view.layer.addSublayer(gradientLayer)
+        //essentially, frame = superview.bounds
         gradientLayer.frame = view.bounds //gradientLayer superview is view.layer, so gradient's coordiante is the same as view's own coordinate
+        
     }
     //calls this when view changes bounds ie when change land scape
     override func viewWillLayoutSubviews() {

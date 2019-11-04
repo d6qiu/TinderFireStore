@@ -43,9 +43,9 @@ class MatchCell: ListCell<Match> {
 }
 
 //ListController(typeofcell, item in cell), flowlayout to set size of cells
-class MatchesMessagesController: ListController<MatchCell, Match>, UICollectionViewDelegateFlowLayout{
+class MatchesPoolController: ListController<MatchCell, Match>, UICollectionViewDelegateFlowLayout{
     
-    let customNavBar = MatchesNavBar()
+    let matchesPoolNavBar = MatchesPoolNavBar()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,10 +55,10 @@ class MatchesMessagesController: ListController<MatchCell, Match>, UICollectionV
         collectionView.backgroundColor = .white
         collectionView.layer.opacity = 1
         
-        customNavBar.backButton.addTarget(self, action: #selector(handleBack), for: .touchUpInside)
+        matchesPoolNavBar.backButton.addTarget(self, action: #selector(handleBack), for: .touchUpInside)
         
-        view.addSubview(customNavBar)
-        customNavBar.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, size: .init(width: 0, height: 150))
+        view.addSubview(matchesPoolNavBar)
+        matchesPoolNavBar.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, size: .init(width: 0, height: 150))
         
         collectionView.contentInset.top = 150 //content of view is 150 down from edge in this cas safewarealayoutguide
     }
@@ -92,8 +92,8 @@ class MatchesMessagesController: ListController<MatchCell, Match>, UICollectionV
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let match = items[indexPath.item]
-        let chatLogController = ChatLogController(match: match)
-        navigationController?.pushViewController(chatLogController, animated: true)
+        let singleChatController = SingleChatController(match: match)
+        navigationController?.pushViewController(singleChatController, animated: true)
     }
         
     @objc fileprivate func handleBack() {
