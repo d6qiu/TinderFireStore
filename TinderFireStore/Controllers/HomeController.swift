@@ -9,7 +9,7 @@
 import UIKit
 import Firebase
 import JGProgressHUD
-class HomeController: UIViewController, SettingsControllerDelegate, LoginControllerDelegate, CardViewDelegate{
+class HomeController: UIViewController, SettingsControllerDelegate, LoginControllerDelegate, CardViewDelegate, MatchViewDelegate{
     
     let topStackView = HomeNavigationStackView()
     let cardsDeckView : UIView = {
@@ -218,7 +218,13 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
             if hasMatched {
                 guard let cardUser = self.users[cardUID] else {return}
                 self.presentMatchView(cardUID: cardUID)
+                
+                
                 let data = ["name": cardUser.name ?? "", "profileImageUrl": cardUser.imageUrl ?? "", "uid": cardUID, "timestamp": Timestamp(date: Date())] as [String : Any]
+                
+                //set up data from sendmessagebutton
+                self.match = .init(dictionary: data)
+                
                 Firestore.firestore().collection("matches_messages").document(uid).collection("matches").document(cardUID).setData(data) { (err) in
                     if let err = err {
                         print(err)
@@ -241,8 +247,12 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
         }
     }
     
+    var match: Match?
+    
     fileprivate func presentMatchView(cardUID: String) {
         let matchView = MatchView()
+        //set up sendmessagebutton 
+        matchView.delegate = self
         matchView.cardUID = cardUID
         matchView.currentUser = self.user
         view.addSubview(matchView)
@@ -351,6 +361,12 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
         overallStackView.isLayoutMarginsRelativeArrangement = true //makes layout base on margins， otherwise base on bounds
         overallStackView.layoutMargins = .init(top: 0, left: 12, bottom: 0, right: 12)
         overallStackView.bringSubviewToFront(cardsDeckView) //bring cardsdeckview to the front of z axis
+    }
+    
+    
+    func didTapSendMessageButton() {
+        let singleChatController = SingleChatController(match: match!)
+        navigationController?.pushViewController(singleChatController, animated: true)
     }
     
 

@@ -8,7 +8,15 @@
 
 import UIKit
 import Firebase
+
+protocol MatchViewDelegate {
+    func didTapSendMessageButton()
+}
+
 class MatchView: UIView {
+    
+    //for set up sendMessageButton
+    var delegate: MatchViewDelegate!
     
     var currentUser: User! {
         didSet {
@@ -77,13 +85,19 @@ class MatchView: UIView {
         let button = SendMessageButton(type: .system)
         button.setTitleColor(.white, for: .normal)
         button.setTitle("Send Message", for: .normal)
+        button.addTarget(self, action: #selector(handleDisplaySingleChat), for: .touchUpInside)
         return button
     }()
+    
+    @objc func handleDisplaySingleChat() {
+        delegate.didTapSendMessageButton()
+    }
     
     fileprivate let keepSwipingButton: UIButton = {
         let button = KeepSwipingButton(type: .system)
         button.setTitle("Keep Swiping", for: .normal)
         button.setTitleColor(.white, for: .normal)
+        button.addTarget(self, action: #selector(handleTapDismiss), for: .touchUpInside)
         return button
     }()
 
@@ -190,6 +204,9 @@ class MatchView: UIView {
         }
         
     }
+    
+    
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

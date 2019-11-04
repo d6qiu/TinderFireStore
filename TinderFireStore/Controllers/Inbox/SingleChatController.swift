@@ -83,10 +83,43 @@ class SingleChatController: ListController<MessageCell, Message>, UICollectionVi
         
     }
     
+    class ChatInputAccessView: UIView {
+        
+        
+    }
+    
+    
+    lazy var redView: UIView = {
+        let redView = UIView(frame: .init(x: 0, y: 0, width: view.frame.width, height: 50))
+        redView.backgroundColor = .red
+        let textView = UITextView()
+        textView.text = "type here"
+        redView.addSubview(textView)
+        textView.fillSuperview()
+        return redView
+    }()
+    
+    //input accessory view
+    override var inputAccessoryView: UIView? {
+        get {
+            return redView
+        }
+    }
+    
+     //whenever user interact with ui element, that element become first responder, canBecomefirstresponder lets commentscontroler can become first responders so from the documentation: When the receiver subsequently becomes the first responder, the responder infrastructure attaches the view to the appropriate input view before displaying it, view is the first responder, but if you set canbecomefirst reponder return false, accessroyr view wont show up
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        collectionView.keyboardDismissMode = .interactive
+        
+        items = [ .init(text: "adsfdsfsad ag fdsfadfdsfadsfgadgsagsgadsg", isUserText: true),
+                  .init(text: "adsfdsfsad ag fdsfadfdsfadsfgadgsagsgadsg", isUserText: false),
+                  .init(text: "adsfdsfsad ag fdsfadfdsfadsfgadgsagsgadsg", isUserText: true)
+        ]
         collectionView.alwaysBounceVertical = true //boucing animation when scroll down to end
         view.addSubview(singleChatNavBar)
         singleChatNavBar.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, size: .init(width: 0, height: navBarHeight))
