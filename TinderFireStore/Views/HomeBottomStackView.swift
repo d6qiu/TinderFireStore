@@ -8,7 +8,7 @@
 
 import UIKit
 
-class HomeBottomControlsStackView: UIStackView {
+class HomeBottomStackView: UIStackView {
 
     //properties cant use non static functions because self does not exist yet, order: initialize properties, self exists, init()
     static func createButton(image: UIImage) -> UIButton {

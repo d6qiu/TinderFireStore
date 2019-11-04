@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SettingsCell: UITableViewCell {
+class BioCell: UITableViewCell {
 
     class SettingsTextField: UITextField {
         

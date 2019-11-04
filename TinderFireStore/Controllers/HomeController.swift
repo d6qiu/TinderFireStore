@@ -11,14 +11,14 @@ import Firebase
 import JGProgressHUD
 class HomeController: UIViewController, SettingsControllerDelegate, LoginControllerDelegate, CardViewDelegate{
     
-    let topStackView = TopNavigationStackView()
+    let topStackView = HomeNavigationStackView()
     let cardsDeckView : UIView = {
        let view = UIView()
         view.layer.opacity = 1
         view.backgroundColor = UIColor.white
         return view
     }()
-    let bottomControls = HomeBottomControlsStackView()
+    let bottomControls = HomeBottomStackView()
     
 
     var cardViewModels = [PosterViewModel]()
@@ -110,8 +110,8 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     
     fileprivate func fetchUsersFromFirestore() {
         //guard let minAge = ...
-        let minAge = user?.minSeekingAge ?? SettingsController.defaultMinSeekingAge //fix bug where a new registering user screen is occupied by a loading hud because early return due to nil minAge using guard statement
-        let maxAge = user?.maxSeekingAge ?? SettingsController.defaultMaxSeekingAge
+        let minAge = user?.minSeekingAge ?? BiosController.defaultMinSeekingAge //fix bug where a new registering user screen is occupied by a loading hud because early return due to nil minAge using guard statement
+        let maxAge = user?.maxSeekingAge ?? BiosController.defaultMaxSeekingAge
         
         let hud = JGProgressHUD(style: .dark)
         hud.textLabel.text = "Finding Matches"
@@ -128,7 +128,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
                 return
             }
             
-            var previousCardView: CardView?
+            var previousCardView: posterView?
             
             snapshot?.documents.forEach({ (documentSnapshot) in
                 let userDictionary = documentSnapshot.data()
@@ -151,7 +151,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     //cache all users because checkifMatchesexist dont have carduser objects, need them save
     var users = [String:User]()
     
-    var topCardView: CardView?
+    var topCardView: posterView?
     
     @objc fileprivate func handleRefresh() {
         if topCardView == nil { //only allow refresh when user swipes all the cards already
@@ -173,7 +173,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     
     fileprivate func saveSwipeToFireStore(didLike: Int) {
         guard let uid = Auth.auth().currentUser?.uid else {return}
-        guard let cardUID = topCardView?.cardViewModel.uid else {return}
+        guard let cardUID = topCardView?.posterViewModel.uid else {return}
         let documentData = [cardUID: didLike]
         Firestore.firestore().collection("swipes").document(uid).getDocument { (snapshot, err) in
             if let err = err {
@@ -284,7 +284,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
         //        }
     }
     
-    func didRemoveCard(cardView: CardView) {
+    func didRemoveCard(cardView: posterView) {
         self.topCardView = self.topCardView?.nextCardView
     }
     
@@ -296,11 +296,11 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
         }
     }
     
-    fileprivate func setupCardFromUser(user: User) -> CardView {
-        let cardView = CardView(frame: .zero)
+    fileprivate func setupCardFromUser(user: User) -> posterView {
+        let cardView = posterView(frame: .zero)
         
         cardView.delegate = self
-        cardView.cardViewModel = user.convertModelToPosterViewModel()
+        cardView.posterViewModel = user.convertModelToPosterViewModel()
         cardsDeckView.addSubview(cardView)
         cardsDeckView.sendSubviewToBack(cardView) //fix anchor flash, the aanchor that stack subviews on top os subviews, now subsview anchor stack below each other, order of cards are reversed in each pagination
         cardView.fillSuperview()
@@ -315,7 +315,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     
     
     @objc func handleSettings() {
-        let settingsController = SettingsController()
+        let settingsController = BiosController()
         settingsController.delegate = self
         let navController = UINavigationController(rootViewController: settingsController)
         navController.modalPresentationStyle = .fullScreen //because ios 13 update need to set fullscreen otherwise wont trigger viewdidappear

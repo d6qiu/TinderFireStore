@@ -9,15 +9,35 @@
 import UIKit
 
 struct Message {
-    
+    let text: String
 }
 
 class MessageCell: ListCell<Message> {
+    
+    //uilabels are vertical center aligned.
+    let textView : UITextView = {
+        let tv = UITextView()
+        tv.backgroundColor = .clear
+        tv.font = UIFont.systemFont(ofSize: 20)
+        tv.isScrollEnabled = false
+        tv.isEditable = false
+        return tv
+    }()
+    
     override var item: Message! {
         didSet {
-            
+            textView.text =  item.text
         }
     }
+    
+    override func setupViews() {
+        super.setupViews()
+        addSubview(textView)
+        textView.fillSuperview()
+    }
+    
+    
+    
 }
 
 class SingleChatController: ListController<MessageCell, Message>, UICollectionViewDelegateFlowLayout{
@@ -33,6 +53,7 @@ class SingleChatController: ListController<MessageCell, Message>, UICollectionVi
     init(match: Match) {
         self.match = match //if there is a super class, in init, must initialize all instance variables before calling super.init()
         super.init()
+        
     }
     
     
@@ -57,7 +78,14 @@ class SingleChatController: ListController<MessageCell, Message>, UICollectionVi
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return .init(width: view.frame.width, height: 100)
+        
+        let guessSizeCell = MessageCell(frame: .init(x: 0, y: 0, width: view.frame.width, height: 1000))
+        guessSizeCell.item = items[indexPath.item]
+        guessSizeCell.layoutIfNeeded() //layout the setupviews in message cells, refresh cell
+        
+        let guessSize = guessSizeCell.systemLayoutSizeFitting(.init(width: view.frame.width, height: 1000))
+        
+        return .init(width: view.frame.width, height: guessSize.height)
     }
     
     required init?(coder aDecoder: NSCoder) {

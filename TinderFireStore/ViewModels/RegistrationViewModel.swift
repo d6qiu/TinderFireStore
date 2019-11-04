@@ -103,8 +103,8 @@ class RegistrationViewModel {
                        "uid": uid,
                        "imageUrl": imageUrl,
                        "age": age ?? 18,
-                        "minSeekingAge": SettingsController.defaultMinSeekingAge,
-                        "maxSeekingAge": SettingsController.defaultMaxSeekingAge
+                        "minSeekingAge": BiosController.defaultMinSeekingAge,
+                        "maxSeekingAge": BiosController.defaultMaxSeekingAge
                        
             ]
         Firestore.firestore().collection("users").document(uid).setData(docData, completion: completion)

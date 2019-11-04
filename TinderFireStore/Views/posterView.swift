@@ -11,29 +11,29 @@ import SDWebImage
 
 protocol CardViewDelegate {
     func didTapMoreInfo(cardViewModel: PosterViewModel)
-    func didRemoveCard(cardView: CardView)
+    func didRemoveCard(cardView: posterView)
     func didSwipe(translationDirection: CGFloat)
 }
 
-class CardView: UIView {
+class posterView: UIView {
 
-    var nextCardView: CardView?
+    var nextCardView: posterView?
     
     var delegate: CardViewDelegate?
     
     //didset invoked upon loading homecontroller in setupcardfromuser
-    var cardViewModel: PosterViewModel! {
+    var posterViewModel: PosterViewModel! {
         didSet {
 //            let imageName = cardViewModel.imageUrls.first ?? "" //imageNames[0] not defined optional, if count == 0 will crash
 //            let url = URL(string: imageName)
 //            imageView.sd_setImage(with: url, placeholderImage: #imageLiteral(resourceName: "photo_placeholder"), options: .continueInBackground) //image placeholder in case url doesnt work, placehold image will show until finish load pic
             
-            swipingPhotosController.cardViewModel = self.cardViewModel
+            swipingPhotosController.cardViewModel = self.posterViewModel
             
-            informationLabel.attributedText = cardViewModel.attributedString
-            informationLabel.textAlignment = cardViewModel.textAlignment
+            informationLabel.attributedText = posterViewModel.attributedString
+            informationLabel.textAlignment = posterViewModel.textAlignment
             
-            (0..<cardViewModel.imageUrls.count).forEach { (_) in
+            (0..<posterViewModel.imageUrls.count).forEach { (_) in
                 let barView = UIView()
                 barView.backgroundColor = barDeselectedColor
                 barsStackView.addArrangedSubview(barView)
@@ -72,7 +72,7 @@ class CardView: UIView {
     
     //goal is to react when a property in another class changes, defines the reaction here
     fileprivate func setupImageIndexObserver() {
-        cardViewModel.imageIndexObserver = { [weak self](idx, imageUrl) in //avoid memorhy cycle
+        posterViewModel.imageIndexObserver = { [weak self](idx, imageUrl) in //avoid memorhy cycle
 //            let url = URL(string: imageUrl!)
 //            self?.barsStackView.arrangedSubviews.forEach({ (v) in
 //                v.backgroundColor = self?.barDeselectedColor
@@ -86,9 +86,9 @@ class CardView: UIView {
         let shouldAdvanceNextPhoto = tapLocation.x > frame.width / 2 ? true : false
         
         if shouldAdvanceNextPhoto {
-            cardViewModel.goToNextPic()
+            posterViewModel.goToNextPic()
         } else {
-            cardViewModel.backToPreviousPic()
+            posterViewModel.backToPreviousPic()
         }
         
     }
@@ -109,7 +109,7 @@ class CardView: UIView {
 //        userDetailsController.view.backgroundColor = .white
 //        rootViewController?.present(userDetailsController, animated: true)
         
-        delegate?.didTapMoreInfo(cardViewModel: self.cardViewModel)
+        delegate?.didTapMoreInfo(cardViewModel: self.posterViewModel)
     }
     
     fileprivate func setupLayout() {

@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+
 struct Match {
     let name, profileImageUrl: String
     init(dictionary: [String: Any]) {
@@ -42,7 +43,7 @@ class MatchCell: ListCell<Match> {
     
 }
 
-//ListController(typeofcell, item in cell), flowlayout to set size of cells
+//ListController(typeofcell, item/data in cell), flowlayout to set size of cells
 class MatchesPoolController: ListController<MatchCell, Match>, UICollectionViewDelegateFlowLayout{
     
     let matchesPoolNavBar = MatchesPoolNavBar()
@@ -75,7 +76,7 @@ class MatchesPoolController: ListController<MatchCell, Match>, UICollectionViewD
                 let dict = documentSnapshot.data()
                 matches.append(.init(dictionary: dict))
             })
-            
+            //cache data for collection view
             self.items = matches
             self.collectionView.reloadData()
         }

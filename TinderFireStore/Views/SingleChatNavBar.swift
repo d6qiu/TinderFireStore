@@ -37,7 +37,7 @@ class SingleChatNavBar: UIView {
                   alignment: .center),
             alignment: .center
         )
-        hstack(backButton, middleStack, flagButton).withMargins(.init(top: 0, left: 16, bottom: 0, right: 16))
+        hstack(backButton.withWidth(50), middleStack, flagButton).withMargins(.init(top: 0, left: 4, bottom: 0, right: 16))
     }
     
     required init?(coder: NSCoder) {

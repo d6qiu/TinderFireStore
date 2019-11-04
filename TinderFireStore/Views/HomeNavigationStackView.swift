@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TopNavigationStackView: UIStackView {
+class HomeNavigationStackView: UIStackView {
 
     let settingsButton = UIButton(type: .system)
     let messageButton = UIButton(type: .system)

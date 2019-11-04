@@ -15,7 +15,7 @@ protocol SettingsControllerDelegate {
     func didSaveSettings()
 }
 
-class SettingsController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class BiosController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 
     var delegate: SettingsControllerDelegate?
     
@@ -201,8 +201,8 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
             let ageRangeCell = AgeRangeCell(style: .default, reuseIdentifier: nil)
             ageRangeCell.minSlider.addTarget(self, action: #selector(handleMinAgeChanged), for: .valueChanged)
             ageRangeCell.maxSlider.addTarget(self, action: #selector(handleMaxAgeChanged), for: .valueChanged)
-            let minAge = user?.minSeekingAge ?? SettingsController.defaultMinSeekingAge
-            let maxAge = user?.maxSeekingAge ?? SettingsController.defaultMaxSeekingAge
+            let minAge = user?.minSeekingAge ?? BiosController.defaultMinSeekingAge
+            let maxAge = user?.maxSeekingAge ?? BiosController.defaultMaxSeekingAge
             ageRangeCell.minLabel.text = "Min \(minAge)"
             ageRangeCell.minSlider.value = Float(minAge)
             ageRangeCell.maxLabel.text = "Max \(maxAge)"
@@ -210,7 +210,7 @@ class SettingsController: UITableViewController, UIImagePickerControllerDelegate
             return ageRangeCell
         }
         
-        let cell = SettingsCell(style: .default, reuseIdentifier: nil) //not going to reuse any
+        let cell = BioCell(style: .default, reuseIdentifier: nil) //not going to reuse any
         switch indexPath.section {
         case 1:
             cell.textField.placeholder = "Enter Name"
