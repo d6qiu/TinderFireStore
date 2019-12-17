@@ -69,6 +69,7 @@ class LoginController: UIViewController {
     
     @objc fileprivate func handleLogin() {
         loginViewModel.performLogin { (err) in
+            //so when login completed dimiss loginhud
             self.loginHUD.dismiss()
             if let err = err {
                 print("Failed to log in:", err)
@@ -105,6 +106,7 @@ class LoginController: UIViewController {
     }
     
     fileprivate let loginViewModel = LoginViewModel()
+    
     fileprivate let loginHUD = JGProgressHUD(style: .dark)
     let disposeBag = DisposeBag()
     fileprivate func setupBindables() {

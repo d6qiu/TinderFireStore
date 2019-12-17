@@ -14,5 +14,4 @@ pod 'SDWebImage'
 pod 'JGProgressHUD'
 pod 'RxSwift'
 pod 'RxCocoa'
-pod 'wobbly'
 end

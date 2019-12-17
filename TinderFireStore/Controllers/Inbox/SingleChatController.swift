@@ -83,20 +83,9 @@ class SingleChatController: ListController<MessageCell, Message>, UICollectionVi
         
     }
     
-    class ChatInputAccessView: UIView {
-        
-        
-    }
-    
     
     lazy var redView: UIView = {
-        let redView = UIView(frame: .init(x: 0, y: 0, width: view.frame.width, height: 50))
-        redView.backgroundColor = .red
-        let textView = UITextView()
-        textView.text = "type here"
-        redView.addSubview(textView)
-        textView.fillSuperview()
-        return redView
+        return ChatInputAccessView(frame: .init(x: 0, y: 0, width: view.frame.width, height: 50))
     }()
     
     //input accessory view
@@ -106,7 +95,7 @@ class SingleChatController: ListController<MessageCell, Message>, UICollectionVi
         }
     }
     
-     //whenever user interact with ui element, that element become first responder, canBecomefirstresponder lets commentscontroler can become first responders so from the documentation: When the receiver subsequently becomes the first responder, the responder infrastructure attaches the view to the appropriate input view before displaying it, view is the first responder, but if you set canbecomefirst reponder return false, accessroyr view wont show up
+     //whenever user interact with ui element, that element become first responder, canBecomefirstresponder lets self.view can become first responders so from the documentation: When the receiver subsequently becomes the first responder, the responder infrastructure attaches the view to the appropriate input view before displaying it, ,if you set canbecomefirst reponder return false, accessroyr view wont show up, self.view instantly becomes the first responder when first switch to this view, then responder infrastructure attaches the redview to the input view (keyboard ?)
     override var canBecomeFirstResponder: Bool {
         return true
     }

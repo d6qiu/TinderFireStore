@@ -263,6 +263,7 @@ class BiosController: UITableViewController, UIImagePickerControllerDelegate, UI
 //        evaluateMinMax()
     }
     
+    //not using
     fileprivate func evaluateMinMax() {
         let ageRangeCell = tableView.cellForRow(at: [5,0]) as! AgeRangeCell
         let minAge = Int(ageRangeCell.minSlider.value)

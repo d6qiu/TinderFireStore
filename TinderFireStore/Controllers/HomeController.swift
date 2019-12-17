@@ -87,6 +87,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
                 self.fetchUsersFromFirestore()
                 return
             }
+//            let data = snapshot?.data() as? [String:Int] ?? [:]
             self.swipes = data
             self.fetchUsersFromFirestore()
         }
@@ -117,9 +118,12 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
         hud.textLabel.text = "Finding Matches"
         hud.show(in: view)
         //cant not filter(whereField) and then order on different fields at the same time
+        //need orderby for .start after to work
         //let query = Firestore.firestore().collection("users").order(by: "uid").start(after: [lastFetchedUser?.uid ?? ""]).limit(to: 1)
         //if argument is nil, invalid query will crash
-        let query = Firestore.firestore().collection("users").whereField("age", isGreaterThanOrEqualTo: minAge).whereField("age", isLessThanOrEqualTo: maxAge).limit(to: 10)
+
+        let querytest = Firestore.firestore().collection("users").whereField("age", isGreaterThanOrEqualTo: minAge).whereField("age", isLessThanOrEqualTo: maxAge)
+        let query =  querytest
         topCardView = nil // need to reset this everytime deck reset from save
         query.getDocuments { (snapshot, err) in
             hud.dismiss()
@@ -136,6 +140,8 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
                 self.users[user.uid ?? ""] = user
                 let isNotCurrentUser = user.uid != Auth.auth().currentUser?.uid
                 let hasNotSwipedBefore = self.swipes[user.uid!] == nil // user.uid is one of the fetched users, not auth.currentuser, u know user uid cant be nil when uid is set upon registration
+//                let hasNotSwipedBefore = true
+                self.lastFetchedUser = user
                 if isNotCurrentUser && hasNotSwipedBefore {
                     let cardView = self.setupCardFromUser(user: user)
                     previousCardView?.nextCardView = cardView
