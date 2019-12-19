@@ -21,7 +21,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow()
         window?.makeKeyAndVisible()
-        window?.rootViewController = UINavigationController(rootViewController: HomeController())
+        let navController = UINavigationController(rootViewController: HomeController())
+//        navController.modalPresentationStyle = .fullScreen
+        window?.rootViewController = navController
 //        window?.rootViewController = SwipingPhotosController(transitionStyle: .scroll, navigationOrientation: .horizontal)
         return true
     }

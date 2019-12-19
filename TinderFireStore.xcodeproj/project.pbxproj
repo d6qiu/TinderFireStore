@@ -45,7 +45,7 @@
 		E4D3F990233D9DC6004AE75B /* MatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D3F98F233D9DC6004AE75B /* MatchView.swift */; };
 		E4DF175123204E1400C8E3FB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E4DF175023204E1400C8E3FB /* GoogleService-Info.plist */; };
 		E4DF175323206AAC00C8E3FB /* Bindable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4DF175223206AAC00C8E3FB /* Bindable.swift */; };
-		E4DF8CF62341BF690068CAB9 /* MatchesMessageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4DF8CF52341BF690068CAB9 /* MatchesMessageController.swift */; };
+		E4DF8CF62341BF690068CAB9 /* MatchesPoolController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4DF8CF52341BF690068CAB9 /* MatchesPoolController.swift */; };
 		E4E64DF423A8AC1A00356D6A /* ChatInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E64DF323A8AC1A00356D6A /* ChatInputAccessoryView.swift */; };
 		F83E239E9E1E4E086D6F5026 /* Pods_TinderFireStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0B46E953C467D96DD8270DD9 /* Pods_TinderFireStore.framework */; };
 /* End PBXBuildFile section */
@@ -93,7 +93,7 @@
 		E4D3F98F233D9DC6004AE75B /* MatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchView.swift; sourceTree = "<group>"; };
 		E4DF175023204E1400C8E3FB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		E4DF175223206AAC00C8E3FB /* Bindable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bindable.swift; sourceTree = "<group>"; };
-		E4DF8CF52341BF690068CAB9 /* MatchesMessageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchesMessageController.swift; sourceTree = "<group>"; };
+		E4DF8CF52341BF690068CAB9 /* MatchesPoolController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchesPoolController.swift; sourceTree = "<group>"; };
 		E4E64DF323A8AC1A00356D6A /* ChatInputAccessoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatInputAccessoryView.swift; sourceTree = "<group>"; };
 		EA2D12C093117B2E37818585 /* Pods-TinderFireStore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TinderFireStore.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TinderFireStore/Pods-TinderFireStore.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -240,7 +240,7 @@
 		E492B3162341AA0D00B7C4A2 /* Inbox */ = {
 			isa = PBXGroup;
 			children = (
-				E4DF8CF52341BF690068CAB9 /* MatchesMessageController.swift */,
+				E4DF8CF52341BF690068CAB9 /* MatchesPoolController.swift */,
 				E42529AD2343C9F100ECE00F /* SingleChatController.swift */,
 				E4E64DF323A8AC1A00356D6A /* ChatInputAccessoryView.swift */,
 			);
@@ -430,7 +430,7 @@
 				E49A9995233FFC8400D11805 /* KeepSwipingButton.swift in Sources */,
 				E43BCDD12325EEB400A62B9A /* BioCell.swift in Sources */,
 				E42A574D23330DBB002CB6B5 /* SwipingPhotosController.swift in Sources */,
-				E4DF8CF62341BF690068CAB9 /* MatchesMessageController.swift in Sources */,
+				E4DF8CF62341BF690068CAB9 /* MatchesPoolController.swift in Sources */,
 				E40A443F230CDC9100AF5B1E /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

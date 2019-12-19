@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import Firebase
 struct Message {
     let text: String
     let isUserText: Bool
@@ -84,14 +84,21 @@ class SingleChatController: ListController<MessageCell, Message>, UICollectionVi
     }
     
     
-    lazy var redView: UIView = {
-        return ChatInputAccessView(frame: .init(x: 0, y: 0, width: view.frame.width, height: 50))
+    lazy var kbInputView: ChatInputAccessView = {
+        let kbi = ChatInputAccessView(frame: .init(x: 0, y: 0, width: view.frame.width, height: 50))
+        kbi.sendButton.addTarget(self, action: #selector(handleSend), for: .touchUpInside)
+        return kbi
     }()
+    
+    @objc fileprivate func handleSend() {
+        guard let currentUserId = Auth.auth().currentUser?.uid else {return}
+        Firestore.firestore().collection("matches_messages").document(currentUserId).collection(match.uid)
+    }
     
     //input accessory view
     override var inputAccessoryView: UIView? {
         get {
-            return redView
+            return kbInputView
         }
     }
     
@@ -107,7 +114,7 @@ class SingleChatController: ListController<MessageCell, Message>, UICollectionVi
         
         items = [ .init(text: "adsfdsfsad ag fdsfadfdsfadsfgadgsagsgadsg", isUserText: true),
                   .init(text: "adsfdsfsad ag fdsfadfdsfadsfgadgsagsgadsg", isUserText: false),
-                  .init(text: "adsfdsfsad ag fdsfadfdsfadsfgadgsagsgadsg", isUserText: true)
+                  .init(text: "adsfdsfsad ag fdsfadfdsfadsfgadgsagsgadsg", isUserText: true)  
         ]
         collectionView.alwaysBounceVertical = true //boucing animation when scroll down to end
         view.addSubview(singleChatNavBar)

@@ -44,6 +44,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
             let registrationController = RegistrationController()
             registrationController.delegate = self
             let navController = UINavigationController(rootViewController: registrationController)
+            navController.modalPresentationStyle = .fullScreen
             present(navController, animated: true)
         }
 
@@ -236,11 +237,10 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
                         print(err)
                         return
                     }
-                    
                 }
                 
                 guard let currentUser = self.user else {return}
-                let reverseMatchData = ["name": currentUser.name ?? "", "profileImageUrl": currentUser.imageUrl ?? "", "uid": uid, "timestamp" : Timestamp(date: Date())] as [String: Any]
+                let reverseMatchData = ["name": currentUser.name ?? "", "profileImageUrl": currentUser.imageUrl ?? "", "uid": currentUser.uid ?? "", "timestamp" : Timestamp(date: Date())] as [String: Any]
                 Firestore.firestore().collection("matches_messages").document(cardUID).collection("matches").document(uid).setData(reverseMatchData) { (err) in
                     if let err = err {
                         print(err)
