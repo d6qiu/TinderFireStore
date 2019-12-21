@@ -8,10 +8,7 @@
 
 import UIKit
 import Firebase
-struct Message {
-    let text: String
-    let isUserText: Bool
-}
+
 
 class MessageCell: ListCell<Message> {
     
@@ -92,7 +89,33 @@ class SingleChatController: ListController<MessageCell, Message>, UICollectionVi
     
     @objc fileprivate func handleSend() {
         guard let currentUserId = Auth.auth().currentUser?.uid else {return}
-        Firestore.firestore().collection("matches_messages").document(currentUserId).collection(match.uid)
+        let collection = Firestore.firestore().collection("matches_messages").document(currentUserId).collection(match.uid)
+        
+        let data = ["text": kbInputView.textView.text ?? "", "fromId": currentUserId, "toId": match.uid, "timestamp": Timestamp(date:Date())] as [String: Any]
+        
+        //auto document id genereated when adddocument
+        collection.addDocument(data: data) { (err) in
+            if let err = err {
+                print(err)
+                return
+            }
+            self.kbInputView.textView.text = ""
+            self.kbInputView.placeHolderLabel.isHidden = false
+            
+        }
+        
+        let toCollection = Firestore.firestore().collection("matches_messages").document(match.uid).collection(currentUserId)
+        
+        toCollection.addDocument(data: data) { (err) in
+            if let err = err {
+                print(err)
+                return
+            }
+            self.kbInputView.textView.text = ""
+            self.kbInputView.placeHolderLabel.isHidden = false
+            
+        }
+
     }
     
     //input accessory view
@@ -108,14 +131,64 @@ class SingleChatController: ListController<MessageCell, Message>, UICollectionVi
     }
     
     
+    fileprivate func fetchMessages() {
+        guard let currentUserId = Auth.auth().currentUser?.uid else {return}
+        let query = Firestore.firestore().collection("matches_messages").document(currentUserId).collection(match.uid).order(by: "timestamp")
+        
+        query.addSnapshotListener { (querySnapshot, err) in
+            if let err = err {
+                print(err)
+                return
+            }
+            
+            querySnapshot?.documentChanges.forEach({ (change) in
+                if change.type == .added {
+                    let dictionary = change.document.data()
+                    self.items.append(.init(dictionary: dictionary))
+                }
+            })
+            self.collectionView.reloadData()
+            //scroll to last message everytime add a message
+            self.collectionView.scrollToItem(at: [0, self.items.count - 1], at: .bottom, animated: true)
+        }
+        
+//        query.getDocuments { (querySnapshot, err) in
+//            if let err  = err {
+//                print(err)
+//                return
+//            }
+//            querySnapshot?.documents.forEach({ (documentSnapshot) in
+//                self.items.append(Message.init(dictionary: documentSnapshot.data()))
+//            })
+//
+//            //can put this is becasue foreach dont have a completion block unlike getDocuments
+//            self.collectionView.reloadData()
+//        }
+    }
+    
+    @objc fileprivate func handleKeyboardShow() {
+        self.collectionView.scrollToItem(at: [0, items.count - 1], at: .bottom, animated: true)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardShow), name: UIResponder.keyboardDidShowNotification, object: nil)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //everytiume keyboad shows scroll to the last message, need remove observer
+        //NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardShow), name: UIResponder.keyboardDidShowNotification, object: nil)
+        
+        
         collectionView.keyboardDismissMode = .interactive
         
-        items = [ .init(text: "adsfdsfsad ag fdsfadfdsfadsfgadgsagsgadsg", isUserText: true),
-                  .init(text: "adsfdsfsad ag fdsfadfdsfadsfgadgsagsgadsg", isUserText: false),
-                  .init(text: "adsfdsfsad ag fdsfadfdsfadsfgadgsagsgadsg", isUserText: true)  
-        ]
+        fetchMessages()
         collectionView.alwaysBounceVertical = true //boucing animation when scroll down to end
         view.addSubview(singleChatNavBar)
         singleChatNavBar.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, size: .init(width: 0, height: navBarHeight))
@@ -124,6 +197,7 @@ class SingleChatController: ListController<MessageCell, Message>, UICollectionVi
         
         singleChatNavBar.backButton.addTarget(self, action: #selector(handleBack), for: .touchUpInside)
         
+        //fix bug where view goes over and cover up status bar when scroll up
         let statusBarCover = UIView(backgroundColor: .white, opacity: 1)
         view.addSubview(statusBarCover)
         statusBarCover.anchor(top: view.topAnchor, leading: view.leadingAnchor, bottom: view.safeAreaLayoutGuide.topAnchor, trailing: view.trailingAnchor)

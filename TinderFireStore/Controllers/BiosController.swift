@@ -177,7 +177,7 @@ class BiosController: UITableViewController, UIImagePickerControllerDelegate, UI
     }
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         if section == 0 {
-            return 300
+            return 300 //only want header for the photos dont want rows
         }
         return 40
     }
