@@ -87,7 +87,7 @@ class SingleChatController: ListController<MessageCell, Message>, UICollectionVi
         return kbi
     }()
     
-    @objc fileprivate func handleSend() {
+    fileprivate func saveToMatchesMessages() {
         guard let currentUserId = Auth.auth().currentUser?.uid else {return}
         let collection = Firestore.firestore().collection("matches_messages").document(currentUserId).collection(match.uid)
         
@@ -115,7 +115,33 @@ class SingleChatController: ListController<MessageCell, Message>, UICollectionVi
             self.kbInputView.placeHolderLabel.isHidden = false
             
         }
-
+    }
+    
+    @objc fileprivate func handleSend() {
+        saveToMatchesMessages()
+        saveToRecentMessages()
+    }
+    
+    fileprivate func saveToRecentMessages() {
+        guard let currentUserId = Auth.auth().currentUser?.uid else {return}
+        let data = ["text": kbInputView.textView.text ?? "", "name": match.name, "profileImageUrl": match.profileImageUrl, "timestamp": Timestamp(date: Date()), "uid": match.uid] as [String:Any]
+        Firestore.firestore().collection("matches_messages").document(currentUserId).collection("recent_messages").document(match.uid).setData(data) { (err) in
+            if let err = err {
+                print(err)
+                return
+            }
+        }
+        
+        guard let currentUser = self.currentUser else {return}
+        
+        let otherData =  ["text": kbInputView.textView.text ?? "", "name": currentUser.name, "profileImageUrl": currentUser.imageUrl, "timestamp": Timestamp(date: Date()), "uid": currentUserId] as [String:Any]
+        Firestore.firestore().collection("matches_messages").document(match.uid).collection("recent_messages").document(currentUserId).setData(otherData) { (err) in
+            if let err = err {
+                print(err)
+                return
+            }
+        }
+        
     }
     
     //input accessory view
@@ -178,9 +204,19 @@ class SingleChatController: ListController<MessageCell, Message>, UICollectionVi
         NotificationCenter.default.removeObserver(self)
     }
     
+    var currentUser: User?
+    
+    fileprivate func fetchCurrentUser() {
+        Firestore.firestore().collection("users").document(Auth.auth().currentUser?.uid ?? "").getDocument { (snapshot, err) in
+            let data = snapshot?.data() ?? [:]
+            self.currentUser = User(dictionary: data)
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+//        fetchCurrentUser() //since seted by matchespoolcontroller or homecontroller
         
         //everytiume keyboad shows scroll to the last message, need remove observer
         //NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardShow), name: UIResponder.keyboardDidShowNotification, object: nil)

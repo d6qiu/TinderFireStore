@@ -10,11 +10,36 @@ import UIKit
 import Firebase
 
 
+struct RecentMessage {
+    let text, uid, name, profileImageUrl: String
+    let timestamp: Timestamp
+    
+    
+    init(dictionary: [String: Any]) {
+        self.text = dictionary["text"] as? String ?? ""
+        self.uid = dictionary["uid"] as? String ?? ""
+        self.name = dictionary["name"] as? String ?? ""
+        self.profileImageUrl = dictionary["profileImageUrl"] as? String ?? ""
+        self.timestamp = dictionary["timestamp"] as? Timestamp ?? Timestamp(date: Date())
+    }
+    
+}
 
-class RecentMessageCell: ListCell<UIColor> {
+
+class RecentMessageCell: ListCell<RecentMessage> {
     let userProfileImageView = UIImageView(image: #imageLiteral(resourceName: "kelly1"), contentMode: .scaleAspectFill)
     let userNameLabel = UILabel(text: "useranme", font: .boldSystemFont(ofSize: 18))
     let messageTexLabel = UILabel(text: "", font: .systemFont(ofSize: 16), textColor: .gray)
+    
+    
+    override var item: RecentMessage! {
+        didSet {
+            userNameLabel.text = item.name
+            messageTexLabel.text = item.text
+            userProfileImageView.sd_setImage(with: URL(string: item.profileImageUrl))
+        }
+    }
+    
     
     override func setupViews() {
         super.setupViews()
@@ -33,7 +58,7 @@ class RecentMessageCell: ListCell<UIColor> {
 
 
 //ListController(typeofcell, item/data in cell), flowlayout to set size of cells
-class MatchesPoolController: ListHeaderController<RecentMessageCell, UIColor, MatchesPoolHeader>, UICollectionViewDelegateFlowLayout{
+class MatchesPoolController: ListHeaderController<RecentMessageCell, RecentMessage, MatchesPoolHeader>, UICollectionViewDelegateFlowLayout{
     
     override func setupHeader(_ header: MatchesPoolHeader) {
         //so matchespoolheader's horizontalviewcontroller has reference to matchesPoolController
@@ -44,23 +69,67 @@ class MatchesPoolController: ListHeaderController<RecentMessageCell, UIColor, Ma
         return 0
     }
     
-    //called matchespoolcontroller.didselectmatchfromheader in horizontalheadercontroller
+    //called matchespoolcontroller.didselectmatchfromheader in horizontalheadercontroller when user press circles in header
     func didSelectMatchFromHeader(match: Match) {
         let singleChatLogController = SingleChatController(match: match)
+        singleChatLogController.currentUser = self.currentUser
         navigationController?.pushViewController(singleChatLogController, animated: true)
     }
     
     let matchesPoolNavBar = MatchesPoolNavBar()
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return .init(width: view.frame.width, height: 200)
+        return .init(width: view.frame.width, height: 250)
     }
     
+    var recentMessagesDictionary = [String: RecentMessage]()
+    
+    fileprivate func fetchRecentMessages() {
+        guard let currentUserId = Auth.auth().currentUser?.uid else {return}
+        Firestore.firestore().collection("matches_messages").document(currentUserId).collection("recent_messages").addSnapshotListener { (querySnapshot, err) in
+            if let err = err {
+                print(err)
+                return
+            }
+            querySnapshot?.documentChanges.forEach({ (change) in
+                //.added referts to only added documents/messages, not modified messages objects, since profileimageurl is part of message objects, modify that wont reflect any changes
+                if change.type == .added || change.type == .modified{
+                    let dictionary = change.document.data()
+                    let recentMessage = RecentMessage(dictionary: dictionary)
+                    self.recentMessagesDictionary[recentMessage.uid] = recentMessage
+                    
+                }
+            })
+            self.resetItems()
+        }
+        
+    }
+    
+    //match takes in other person's info, same as recentmessage
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let recentMessage = self.items[indexPath.item]
+        let dictionary = ["name": recentMessage.name, "profileImageUrl": recentMessage.profileImageUrl, "uid": recentMessage.uid]
+        let match = Match(dictionary: dictionary)
+        let controller = SingleChatController(match: match)
+        controller.currentUser = self.currentUser
+        navigationController?.pushViewController(controller, animated: true)
+    }
+    
+    //purpose: sort them by timestamp
+    fileprivate func resetItems() {
+        let values = Array(recentMessagesDictionary.values)
+        items = values.sorted(by: { (rm1, rm2) -> Bool in
+            return rm1.timestamp.compare(rm2.timestamp) == .orderedDescending
+        })
+        collectionView.reloadData()
+    }
+    
+    var currentUser : User?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
+        fetchRecentMessages()
         
         
         //item is of type Match, items is the cache

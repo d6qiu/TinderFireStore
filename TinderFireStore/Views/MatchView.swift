@@ -9,14 +9,14 @@
 import UIKit
 import Firebase
 
-protocol MatchViewDelegate {
+protocol MatchViewDelegate: AnyObject{
     func didTapSendMessageButton()
 }
 
 class MatchView: UIView {
     
     //for set up sendMessageButton
-    var delegate: MatchViewDelegate!
+    weak var delegate: MatchViewDelegate!
     
     var currentUser: User! {
         didSet {
@@ -91,6 +91,7 @@ class MatchView: UIView {
     
     @objc func handleDisplaySingleChat() {
         delegate.didTapSendMessageButton()
+        self.removeFromSuperview()
     }
     
     fileprivate let keepSwipingButton: UIButton = {

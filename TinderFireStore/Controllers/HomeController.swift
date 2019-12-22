@@ -105,6 +105,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     
     @objc fileprivate func handleMessages() {
         let matchesMessagesController = MatchesPoolController()
+        matchesMessagesController.currentUser = user
         navigationController?.pushViewController(matchesMessagesController, animated: true)
     }
     
@@ -372,6 +373,7 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
     
     func didTapSendMessageButton() {
         let singleChatController = SingleChatController(match: match!)
+        singleChatController.currentUser = user
         navigationController?.pushViewController(singleChatController, animated: true)
     }
     
