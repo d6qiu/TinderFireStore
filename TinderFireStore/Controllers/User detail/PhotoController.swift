@@ -26,7 +26,7 @@ class PhotoController: UIViewController {
         super.viewDidLoad()
         view.addSubview(imageView)
         imageView.fillSuperview()
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit //or .scaleAspectfill
         imageView.clipsToBounds = true //avoid pics overlapping each other
     }
     required init?(coder aDecoder: NSCoder) {

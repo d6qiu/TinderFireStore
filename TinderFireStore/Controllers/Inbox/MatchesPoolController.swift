@@ -61,7 +61,7 @@ class RecentMessageCell: ListCell<RecentMessage> {
 class MatchesPoolController: ListHeaderController<RecentMessageCell, RecentMessage, MatchesPoolHeader>, UICollectionViewDelegateFlowLayout{
     
     override func setupHeader(_ header: MatchesPoolHeader) {
-        //so matchespoolheader's horizontalviewcontroller has reference to matchesPoolController
+        //so matchespoolheader's horizontalviewcontroller has strong reference to matchesPoolController to fetch messages, watch out for retain cycle here
         header.horizontalViewController.rootMatchesController = self
     }
     
@@ -84,9 +84,19 @@ class MatchesPoolController: ListHeaderController<RecentMessageCell, RecentMessa
     
     var recentMessagesDictionary = [String: RecentMessage]()
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if isMovingFromParent {
+            listener?.remove() //gets rid of retain cycle by firestore listener
+        }
+    }
+    
+    var listener : ListenerRegistration?
+    
     fileprivate func fetchRecentMessages() {
         guard let currentUserId = Auth.auth().currentUser?.uid else {return}
-        Firestore.firestore().collection("matches_messages").document(currentUserId).collection("recent_messages").addSnapshotListener { (querySnapshot, err) in
+        let query = Firestore.firestore().collection("matches_messages").document(currentUserId).collection("recent_messages")
+        listener = query.addSnapshotListener { (querySnapshot, err) in
             if let err = err {
                 print(err)
                 return
@@ -169,5 +179,10 @@ class MatchesPoolController: ListHeaderController<RecentMessageCell, RecentMessa
             
     @objc fileprivate func handleBack() {
         navigationController?.popViewController(animated: true)
+    }
+    
+    
+    deinit {
+        print("matchesPoolController self destruct, no retain cycle")
     }
 }

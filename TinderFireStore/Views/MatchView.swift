@@ -212,4 +212,8 @@ class MatchView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        print("matchview self destruct, no retain cycle")
+    }
+    
 }

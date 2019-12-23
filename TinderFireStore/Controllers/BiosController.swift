@@ -17,9 +17,7 @@ protocol SettingsControllerDelegate {
 
 class BiosController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
-    deinit {
-        print("bioscontroller destroyed itself, no retain cycle")
-    }
+
 
     var delegate: SettingsControllerDelegate?
     
@@ -339,6 +337,10 @@ class BiosController: UITableViewController, UIImagePickerControllerDelegate, UI
         try? Auth.auth().signOut() //dont need try catch block if use try?
         dismiss(animated: true)
     }
+    
 
+    deinit {
+        print("bioscontroller destroyed itself, no retain cycle")
+    }
 
 }

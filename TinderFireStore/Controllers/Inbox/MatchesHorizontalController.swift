@@ -11,7 +11,7 @@ import Firebase
 
 class MatchesHorizontalController: ListController<MatchCircleCell, Match>, UICollectionViewDelegateFlowLayout {
     
-    var rootMatchesController: MatchesPoolController?
+    weak var rootMatchesController: MatchesPoolController?
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let match = self.items[indexPath.item]

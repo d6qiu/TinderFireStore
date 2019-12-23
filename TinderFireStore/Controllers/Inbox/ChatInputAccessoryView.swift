@@ -8,9 +8,7 @@
 
 import UIKit
 
-//protocol textBeginChange: AnyObject {
-//    func textDidBeginEditing()
-//}
+
 
 class ChatInputAccessView: UIView {
     
@@ -19,7 +17,6 @@ class ChatInputAccessView: UIView {
     
     let placeHolderLabel = UILabel(text: "Enter message", font: .systemFont(ofSize: 16), textColor: .lightGray)
 
-//    weak var delegate:textBeginChange!
     
     //make scalable views depends on their content, in this case text views?
     override var intrinsicContentSize: CGSize {
@@ -40,7 +37,6 @@ class ChatInputAccessView: UIView {
         
         //self observe textdidchangenotificaiton
         NotificationCenter.default.addObserver(self, selector: #selector(handleTextChange), name: UITextView.textDidChangeNotification, object: nil)
-//        NotificationCenter.default.addObserver(self, selector: #selector(handleTextBeginChange), name: UITextView.textDidBeginEditingNotification, object: nil)
 
         hstack(textView, sendButton.withSize(.init(width: 60, height: 60)), alignment: .center).withMargins(.init(top: 0, left: 16, bottom: 0, right: 16))
         addSubview(placeHolderLabel)
@@ -64,8 +60,10 @@ class ChatInputAccessView: UIView {
     }
     
     
+    
     deinit {
         NotificationCenter.default.removeObserver(self) //remove observer to prevent retain cycle
+        print("chatinputaccesoryview self destruct, no retain cycle")
     }
     
     required init?(coder: NSCoder) {

@@ -84,11 +84,11 @@ class HomeController: UIViewController, SettingsControllerDelegate, LoginControl
                 return
             }
             //when snapshot is nil because current user havent swiped at all, fetchusers regardless of current user swipes
-            guard let data = snapshot?.data() as? [String: Int] else {
-                self.fetchUsersFromFirestore()
-                return
-            }
-//            let data = snapshot?.data() as? [String:Int] ?? [:]
+//            guard let data = snapshot?.data() as? [String: Int] else {
+//                self.fetchUsersFromFirestore()
+//                return
+//            }
+            let data = snapshot?.data() as? [String:Int] ?? [:]
             self.swipes = data
             self.fetchUsersFromFirestore()
         }
