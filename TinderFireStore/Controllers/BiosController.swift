@@ -16,6 +16,10 @@ protocol SettingsControllerDelegate {
 }
 
 class BiosController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    deinit {
+        print("bioscontroller destroyed itself, no retain cycle")
+    }
 
     var delegate: SettingsControllerDelegate?
     

@@ -80,6 +80,11 @@ class SingleChatController: ListController<MessageCell, Message>, UICollectionVi
         
     }
     
+    //if not called when pop, then has strong reference holding onto this class, make sure weak self in closure, notificationcenter closure, and weak delegate
+    deinit {
+        print("singlechatcontroller destroyed itself, no retain cycle")
+    }
+    
     
     lazy var kbInputView: ChatInputAccessView = {
         let kbi = ChatInputAccessView(frame: .init(x: 0, y: 0, width: view.frame.width, height: 50))
@@ -156,12 +161,15 @@ class SingleChatController: ListController<MessageCell, Message>, UICollectionVi
         return true
     }
     
+    var listener: ListenerRegistration?
+    var firstFetchedMessage = true
     
     fileprivate func fetchMessages() {
         guard let currentUserId = Auth.auth().currentUser?.uid else {return}
         let query = Firestore.firestore().collection("matches_messages").document(currentUserId).collection(match.uid).order(by: "timestamp")
         
-        query.addSnapshotListener { (querySnapshot, err) in
+        //listener will strong reference self, so need to remove listner when not using
+        listener = query.addSnapshotListener { (querySnapshot, err) in
             if let err = err {
                 print(err)
                 return
@@ -170,14 +178,29 @@ class SingleChatController: ListController<MessageCell, Message>, UICollectionVi
             querySnapshot?.documentChanges.forEach({ (change) in
                 if change.type == .added {
                     let dictionary = change.document.data()
-                    self.items.append(.init(dictionary: dictionary))
+                    self.items.append(Message(dictionary: dictionary))
                 }
             })
             self.collectionView.reloadData()
-            //scroll to last message everytime add a message
-            self.collectionView.scrollToItem(at: [0, self.items.count - 1], at: .bottom, animated: true)
+            
+            //scroll to last message everytime add a message, this will be annoying to user so set it only the first fetched message will scroll all the way down
+            if self.firstFetchedMessage {
+                self.collectionView.scrollToItem(at: [0, self.items.count - 1], at: .bottom, animated: false)
+                self.firstFetchedMessage = false
+            }
+            
+            //if last message is from this user, scroll all the way down, so if user just send the message, will scroll al teh way down,
+            //if not from user, will not scroll down
+            if self.items.last?.fromId == Auth.auth().currentUser?.uid {
+                self.collectionView.scrollToItem(at: [0, self.items.count - 1], at: .bottom, animated: true)
+
+            }
         }
         
+        //only calls this view did load
+//        self.collectionView.scrollToItem(at: [0, self.items.count - 1], at: .bottom, animated: false)
+
+                
 //        query.getDocuments { (querySnapshot, err) in
 //            if let err  = err {
 //                print(err)
@@ -192,16 +215,23 @@ class SingleChatController: ListController<MessageCell, Message>, UICollectionVi
 //        }
     }
     
-    @objc fileprivate func handleKeyboardShow() {
-        self.collectionView.scrollToItem(at: [0, items.count - 1], at: .bottom, animated: true)
-    }
+    
+
     
     override func viewWillAppear(_ animated: Bool) {
-        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardShow), name: UIResponder.keyboardDidShowNotification, object: nil)
+        super.viewWillAppear(animated)
+//        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardShow), name: UIResponder.keyboardDidShowNotification, object: nil)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        NotificationCenter.default.removeObserver(self)
+        super.viewWillDisappear(animated)
+        //if self destruct
+        if isMovingFromParent {
+            NotificationCenter.default.removeObserver(self)
+            listener?.remove()
+        }
+        
+        
     }
     
     var currentUser: User?
@@ -213,18 +243,43 @@ class SingleChatController: ListController<MessageCell, Message>, UICollectionVi
         }
     }
     
+    var kbheight: CGFloat = 200
+
+    @objc fileprivate func handleKeyboardShow(_ notification: Notification) {
+
+        if let keyboardRect = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            if keyboardRect.height > kbheight {
+                kbheight = keyboardRect.height
+                print("keyboard height: ", kbheight)
+
+            }
+        }
+    }
+    
+    @objc func handleTextBeginChange() {
+        collectionView.contentOffset = .init(x: 0, y: collectionView.contentOffset.y + (kbheight - 70) )
+
+    }
+    
+    
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+//        setupHideKeyboardWhenTappedAround()
 //        fetchCurrentUser() //since seted by matchespoolcontroller or homecontroller
         
         //everytiume keyboad shows scroll to the last message, need remove observer
-        //NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardShow), name: UIResponder.keyboardDidShowNotification, object: nil)
+        //it be annoying to user if user doesnt want to scroll down whenever keyboard shows, so removing this feature
+        NotificationCenter.default.addObserver(self, selector: #selector(handleKeyboardShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(handleTextBeginChange), name: UITextView.textDidBeginEditingNotification, object: nil)
+
         collectionView.keyboardDismissMode = .interactive
         
         fetchMessages()
+
         collectionView.alwaysBounceVertical = true //boucing animation when scroll down to end
         view.addSubview(singleChatNavBar)
         singleChatNavBar.anchor(top: view.safeAreaLayoutGuide.topAnchor, leading: view.leadingAnchor, bottom: nil, trailing: view.trailingAnchor, size: .init(width: 0, height: navBarHeight))
